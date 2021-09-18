@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PS.APLICATION", "PS.APLICAT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PS.CINE", "PS.CINE\PS.CINE.csproj", "{38DB4627-6F4D-42AC-B74B-BCA192986820}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS.API.CINE", "PS.API.CINE\PS.API.CINE.csproj", "{6FE1B0C0-3662-4513-B320-862FBB14E33B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{38DB4627-6F4D-42AC-B74B-BCA192986820}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38DB4627-6F4D-42AC-B74B-BCA192986820}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38DB4627-6F4D-42AC-B74B-BCA192986820}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FE1B0C0-3662-4513-B320-862FBB14E33B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FE1B0C0-3662-4513-B320-862FBB14E33B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FE1B0C0-3662-4513-B320-862FBB14E33B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FE1B0C0-3662-4513-B320-862FBB14E33B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
