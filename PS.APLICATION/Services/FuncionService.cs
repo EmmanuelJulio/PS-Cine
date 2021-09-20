@@ -14,6 +14,7 @@ namespace PS.APLICATION.Services
     public interface IFuncionService
     {
         public void AddFunction(Funciones entity);
+        public Funciones AddFunctionAndReturn(Funciones entity);
         public Funciones OptenerFuncionPorId(int idfuncion);
 
         public List<Funciones> FuncionesDisponibles(int Film);
@@ -29,6 +30,7 @@ namespace PS.APLICATION.Services
     {
         private readonly GenericRepository genericsRepository;
         private readonly ApplicationDbContext context;
+        //private readonly iFuncion
 
 
         public FuncionService(GenericRepository genericsRepository, ApplicationDbContext context)
@@ -40,6 +42,12 @@ namespace PS.APLICATION.Services
         public void AddFunction(Funciones entity)
         {
             genericsRepository.Add<Funciones>(entity);
+        }
+
+        public Funciones AddFunctionAndReturn(Funciones entity)
+        {
+            genericsRepository.Add<Funciones>(entity);
+            return entity;
         }
 
         public List<Funciones> FuncionesDisponibles(int Film)

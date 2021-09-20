@@ -34,7 +34,7 @@ namespace PS.CINE
                 Console.WriteLine("********************************************************************************************************************");
                 Console.WriteLine("********************************************************************************************************************");
                 Console.WriteLine("1) Lista de peliculas");
-                Console.WriteLine("2) Ver sus funciones disponibles");
+                Console.WriteLine("2) Ver funciones disponibles");
                 Console.WriteLine("3) Ver mas informacion de una pelicula");
                 Console.WriteLine("4) Generar nueva funcion");
                 Console.WriteLine("5) Sacar TIket para una funcion");
@@ -64,7 +64,7 @@ namespace PS.CINE
                         options.Option6();
                         break;
                     case 7:
-                        Console.WriteLine("Esta seguro que decea salir??");
+                        Console.WriteLine("Esta seguro que desea salir??");
                         Console.WriteLine("s/n");
                         string decicion = Console.ReadLine();
                         if (decicion == "s")

@@ -52,26 +52,39 @@ namespace PS.CINE
 
         public void Option2()
         {
+            foreach (var film in peliculaService.MostrarPeliculas())
+            {
+                Console.WriteLine("Id = " + film.PeliculaId+ " Titulo: " + film.Titulo);
+             
+            }
             Console.WriteLine("Ingrese el identificador de la pelicula para ver si hay funciones disponibles");
-            List<Funciones> funciones = funcionService.FuncionesDisponibles(Convert.ToInt32(Console.ReadLine()));
-            if (funciones.Count != 0)
+            try
             {
-                Console.WriteLine("-------------------------------------");
-                foreach (var funcion in funciones)
+                List<Funciones> funciones = funcionService.FuncionesDisponibles(Convert.ToInt32(Console.ReadLine()));
+                if (funciones.Count != 0)
                 {
-
-                    Console.WriteLine("Id de Funcion 1" + funcion.FuncionId);
-                    Console.WriteLine("Nombre de la funcion " + peliculaService.NombrePeliculaPorId(funcion.PeliculaId));
-                    Console.WriteLine(funcion.Horario);
                     Console.WriteLine("-------------------------------------");
+                    foreach (var funcion in funciones)
+                    {
 
+                        Console.WriteLine("Id de Funcion 1" + funcion.FuncionId);
+                        Console.WriteLine("Nombre de la funcion " + peliculaService.NombrePeliculaPorId(funcion.PeliculaId));
+                        Console.WriteLine(funcion.Horario);
+                        Console.WriteLine("-------------------------------------");
+
+                    }
                 }
+                else
+                {
+                    Console.WriteLine("No hay funciones disponibles para este film");
+                }
+                Console.WriteLine("Precione una tecla para continuar...");
             }
-            else
+            catch (Exception)
             {
-                Console.WriteLine("No hay funciones disponibles para este film");
+
+                Console.WriteLine("Seleccione una opcion valida");
             }
-            Console.WriteLine("Precione una tecla para continuar...");
             Console.ReadLine();
         }
 
@@ -116,22 +129,28 @@ namespace PS.CINE
             List<Peliculas> peliculas3 = peliculaService.MostrarPeliculas();
             foreach (var film in peliculas3)
             {
-
-                Console.WriteLine("Id de pelicula " + film.PeliculaId);
-                Console.WriteLine("Titulo: " + film.Titulo);
-
+                Console.WriteLine("Id = " + film.PeliculaId +" Titulo: " + film.Titulo);
             }
             Console.WriteLine("Seleccione una pelicula para crear una funcion");
-            int idpelicula = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Seleccione un horario hh:mm");
-            TimeSpan horaFuncion = TimeSpan.Parse(Console.ReadLine());
-            Console.WriteLine("Seleccione una sala");
-            foreach (var Sala in salaService.MostrarSalas())
+            try
             {
-                Console.WriteLine("Id sala " + Sala.SalasId);
-                Console.WriteLine("capacidad sala " + Sala.Capacidad);
+                int idpelicula = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Seleccione un horario hh:mm");
+                TimeSpan horaFuncion = TimeSpan.Parse(Console.ReadLine());
+                Console.WriteLine("Seleccione una sala");
+                foreach (var Sala in salaService.MostrarSalas())
+                {
+                    Console.WriteLine("Id sala " + Sala.SalasId);
+                    Console.WriteLine("capacidad sala " + Sala.Capacidad);
+                }
+                
+                funcionValidation.CrearFuncion(idpelicula, horaFuncion, Convert.ToInt32(Console.ReadLine()));
             }
-            funcionValidation.CrearFuncion(idpelicula, horaFuncion, Convert.ToInt32(Console.ReadLine()));
+            catch (Exception)
+            {
+
+                Console.WriteLine("Seleccione una opcion valida");
+            }
             Console.ReadLine();
         }
 

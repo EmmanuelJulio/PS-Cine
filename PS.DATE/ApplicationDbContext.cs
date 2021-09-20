@@ -11,16 +11,15 @@ namespace PS.DATE
 {
     public class ApplicationDbContext: DbContext
     {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        :base (options)
+        {
+        }
 
-
-      
-
-
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
             {
-                optionsBuilder.UseSqlServer("Data Source=DESKTOP-LDA7PAA;Initial Catalog=Cine;Integrated Security=True");
-                base.OnConfiguring(optionsBuilder);
+                //optionsBuilder.UseSqlServer("Data Source=DESKTOP-LDA7PAA;Initial Catalog=Cine;Integrated Security=True");
+                //base.OnConfiguring(optionsBuilder);
             }
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)

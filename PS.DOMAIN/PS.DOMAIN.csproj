@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <Folder Include="DataTransferObject\" />
+    <Folder Include="DTOs\" />
   </ItemGroup>
 
 </Project>
