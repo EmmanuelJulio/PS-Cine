@@ -15,6 +15,7 @@ namespace PS.API.CINE.Controllers
 
         public FuncionController(IFuncionService service)
         {
+
             _service = service;
         }
 
