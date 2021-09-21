@@ -19,10 +19,10 @@ namespace PS.APLICATION.Services
     public class TicketService: ITicketService
     {
 
-        private readonly GenericRepository genericsRepository;
+        private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
 
-        public TicketService(GenericRepository genericsRepository, ApplicationDbContext context)
+        public TicketService(IGenericsRepository genericsRepository, ApplicationDbContext context)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;

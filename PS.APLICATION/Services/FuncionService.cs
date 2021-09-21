@@ -28,12 +28,12 @@ namespace PS.APLICATION.Services
 
     public class FuncionService: IFuncionService
     {
-        private readonly GenericRepository genericsRepository;
+        private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
         //private readonly iFuncion
 
 
-        public FuncionService(GenericRepository genericsRepository, ApplicationDbContext context)
+        public FuncionService(IGenericsRepository genericsRepository, ApplicationDbContext context)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;
@@ -78,7 +78,7 @@ namespace PS.APLICATION.Services
             TimeSpan horasDeFuncionStandar = new TimeSpan(0, 2, 30, 0);
             bool yaExisteUnaFuncionEnEsaHora = false;       
                 List<Funciones> funcion = (from x in context.Funciones where x.SalaId == idsala select x).ToList();
-                if (funcion.Count > 0)
+                if (funcion.Any())
                 {
                     foreach (Funciones funciones in funcion)
                     {

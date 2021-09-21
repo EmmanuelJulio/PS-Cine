@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace PS.DATE.Queries
 {
-    
-   public class PeliculaQuery : IPeliculaQuery
+    public class SalasQuery : ISalasQuery
     {
-        //private readonly 
     }
 }

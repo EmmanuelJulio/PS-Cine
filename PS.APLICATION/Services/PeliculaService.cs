@@ -15,19 +15,25 @@ namespace PS.APLICATION.Services
         public List<Peliculas> MostrarPeliculas();
         public List<Peliculas> MasInformacionDeFilm(int idfilm);
         public string NombrePeliculaPorId(int idfilm);
+        public Peliculas GetFilm(int id);
     }
 
 
     public class PeliculaService: IpeliculaService
     {
 
-        private readonly GenericRepository genericsRepository;
+        private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
 
-        public PeliculaService(GenericRepository genericsRepository, ApplicationDbContext context)
+        public PeliculaService(IGenericsRepository genericsRepository, ApplicationDbContext context)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;
+        }
+
+        public Peliculas GetFilm(int id)
+        {
+            return (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<Peliculas>();
         }
 
         public List<Peliculas> MasInformacionDeFilm(int idfilm)

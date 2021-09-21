@@ -19,10 +19,10 @@ namespace PS.APLICATION.Services
     public class SalaService: ISalaService
     {
 
-        private readonly GenericRepository genericsRepository;
+        private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
 
-        public SalaService(GenericRepository genericsRepository, ApplicationDbContext context)
+        public SalaService(IGenericsRepository genericsRepository, ApplicationDbContext context)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;

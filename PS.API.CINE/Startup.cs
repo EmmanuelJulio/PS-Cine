@@ -19,6 +19,8 @@ using Microsoft.Data.SqlClient;
 using PS.DOMAIN.Comands;
 using PS.DATE.Command;
 using PS.APLICATION.Services;
+using PS.DOMAIN.Queries;
+using PS.DATE.Queries;
 //using SqlKata.Compilers;
 
 namespace PS.API.CINE
@@ -49,9 +51,22 @@ namespace PS.API.CINE
             });
             services.AddTransient<IGenericsRepository, GenericRepository>();
             services.AddTransient<IFuncionService, FuncionService>();
+            services.AddTransient<IFuncionQuery, FuncionQuery>();
             services.AddTransient<IpeliculaService, PeliculaService>();
+            services.AddTransient<IPeliculaQuery, PeliculaQuery>();
             services.AddTransient<ITicketService, TicketService>();
+            services.AddTransient<ITiketsQuery, TiketQuery>();
             services.AddTransient<ISalaService, SalaService>();
+            services.AddTransient<ISalasQuery, SalasQuery>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AnyAllow", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+            services.AddTransient<IDbConnection>(b =>
+            {
+                return new SqlConnection(connectionString);
+
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,7 +80,7 @@ namespace PS.API.CINE
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors("AnyAllow");
             app.UseRouting();
 
             app.UseAuthorization();
