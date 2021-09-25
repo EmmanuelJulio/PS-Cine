@@ -11,7 +11,7 @@ namespace PS.DOMAIN.Entities
 
         public int SalasId { get; set; }
         public int Capacidad { get; set; }
-        public virtual ICollection<Funciones> Funciones { get; set; }
+        public virtual List<Funciones> Funciones { get; set; }
 
     }
 }

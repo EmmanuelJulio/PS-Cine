@@ -18,18 +18,22 @@ namespace PS.DATE
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
             {
-                //optionsBuilder.UseSqlServer("Data Source=DESKTOP-LDA7PAA;Initial Catalog=Cine;Integrated Security=True");
-                //base.OnConfiguring(optionsBuilder);
+              
+
             }
 
             protected override void OnModelCreating(ModelBuilder modelBuilder)
 
             {
 
-                modelBuilder.Entity<Peliculas>(entity =>
+                    new ConfigFunciones(modelBuilder.Entity<Funciones>());
+                    new ConfigTickets(modelBuilder.Entity<Tickets>());
+                    new ConfigSalas(modelBuilder.Entity<Salas>());
+                    new ConfigPeliculas(modelBuilder.Entity<PeliculaDTO>());
+                    modelBuilder.Entity<PeliculaDTO>(entity =>
                 {
                     entity.ToTable("Peliculas");
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 1,
                         Titulo = "Furia de titanes",
@@ -37,7 +41,7 @@ namespace PS.DATE
                         Sinospsis = "Perseo, hijo de Zeus y una mortal, se embarca en una peligrosa misión para salvar la vida de la princesa Andrómeda.",
                         Trailer = "https://www.youtube.com/watch?v=cfk-eagYt9Q"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 2,
                         Titulo = "Iron Man 1",
@@ -45,7 +49,7 @@ namespace PS.DATE
                         Sinospsis = "Iron Man es la historia del industrial multimillonario y genio inventor Tony Stark (ROBERT DOWNEY JR.). ... ",
                         Trailer = "https://www.youtube.com/watch?v=8ugaeA-nMTc"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 3,
                         Titulo = "Hulk",
@@ -53,7 +57,7 @@ namespace PS.DATE
                         Sinospsis = "Bruce Banner recorre el mundo en busca de un antídoto para librarse de su alter ego. Además tendrá que hacer frente a Emil, un nuevo enemigo",
                         Trailer = "https://www.youtube.com/watch?v=xbqNb2PFKKA"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 4,
                         Titulo = "Frozen 2",
@@ -61,7 +65,7 @@ namespace PS.DATE
                         Sinospsis = "Una profecía condena al reino de Arandelle a vivir en un invierno eterno. La joven Anna, el temerario montañero Kristoff y el reno Sven deben emprender un viaje épico",
                         Trailer = "https://www.youtube.com/watch?v=QTvcYow0Z5U"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 5,
                         Titulo = "Jurassic World",
@@ -69,7 +73,7 @@ namespace PS.DATE
                         Sinospsis = "Han pasado 22 años desde que el millonario John Hammond clonara el primer dinosaurio. Con tecnologías mejoradas y nuevas medidas de seguridad",
                         Trailer = "https://www.youtube.com/watch?v=QTvcYow0Z5U"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 6,
                         Titulo = "El rey leon",
@@ -77,7 +81,7 @@ namespace PS.DATE
                         Sinospsis = "Tras la muerte de su padre, Simba deberá enfrentarse a su tío para recuperar el trono de Rey de la Selva. Timón y Pumba le acompañarán en su misión.",
                         Trailer = "https://www.youtube.com/watch?v=mb79ctR-E-c"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 7,
                         Titulo = "Vengadores: Infinity War",
@@ -85,7 +89,7 @@ namespace PS.DATE
                         Sinospsis = "Los superhéroes se alían para vencer al poderoso Thanos, el peor enemigo al que se han enfrentado. Si Thanos logra reunir las seis gemas del infinito",
                         Trailer = "https://youtu.be/-f5PwE_Q8Fs"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 8,
                         Titulo = "Titanic",
@@ -93,7 +97,7 @@ namespace PS.DATE
                         Sinospsis = "Jack es un joven artista que gana un pasaje para viajar a América en el Titanic, el transatlántico más grande y seguro jamás construido. ",
                         Trailer = "https://www.youtube.com/watch?v=FiRVcExwBVA"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 9,
                         Titulo = "Vengadores End Game",
@@ -101,7 +105,7 @@ namespace PS.DATE
                         Sinospsis = "Después de los eventos devastadores de infiniti wards, el universo está en ruinas debido a las acciones de Thanos, el Titán Loco. ",
                         Trailer = "https://www.youtube.com/watch?v=UQ3bqYKnyhM"
                     });
-                    entity.HasData(new Peliculas
+                    entity.HasData(new PeliculaDTO
                     {
                         PeliculaId = 10,
                         Titulo = "Avatar",
@@ -120,13 +124,10 @@ namespace PS.DATE
                     entity.HasData(new Salas { SalasId = 3, Capacidad = 30 });
 
                 });
-                new ConfigFunciones(modelBuilder.Entity<Funciones>());
-                new ConfigTickets(modelBuilder.Entity<Tickets>());
-                new ConfigSalas(modelBuilder.Entity<Salas>());
-                new ConfigPeliculas(modelBuilder.Entity<Peliculas>());
+               
             }
             public DbSet<Funciones> Funciones { get; set; }
-            public DbSet<Peliculas> Peliculas { get; set; }
+            public DbSet<PeliculaDTO> Peliculas { get; set; }
             public DbSet<Tickets> Tickets { get; set; }
             public DbSet<Salas> Salas { get; set; }
 

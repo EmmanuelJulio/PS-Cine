@@ -1,6 +1,7 @@
 ﻿using PS.DATE;
 using PS.DATE.Command;
 using PS.DOMAIN.Comands;
+using PS.DOMAIN.DTOs;
 using PS.DOMAIN.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace PS.APLICATION.Services
     public interface IFuncionService
     {
         public void AddFunction(Funciones entity);
-        public Funciones AddFunctionAndReturn(Funciones entity);
+        public Funciones AddFunctionAndReturn(FuncionesDTO entity);
         public Funciones OptenerFuncionPorId(int idfuncion);
 
         public List<Funciones> FuncionesDisponibles(int Film);
@@ -44,10 +45,20 @@ namespace PS.APLICATION.Services
             genericsRepository.Add<Funciones>(entity);
         }
 
-        public Funciones AddFunctionAndReturn(Funciones entity)
+       
+
+        public Funciones AddFunctionAndReturn(FuncionesDTO entity)
         {
-            genericsRepository.Add<Funciones>(entity);
-            return entity;
+            var NewFuncion = new Funciones()
+            {
+                PeliculaId = entity.PeliculaId,
+                Fecha = Convert.ToDateTime(entity.Fecha),
+                Horario = TimeSpan.Parse(entity.Horario),
+                SalaId = entity.SalaId
+            };
+
+            genericsRepository.Add<Funciones>(NewFuncion);
+            return NewFuncion;
         }
 
         public List<Funciones> FuncionesDisponibles(int Film)

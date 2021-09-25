@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PS.APLICATION.Services;
+using PS.DOMAIN.Comands;
+using PS.DOMAIN.DTOs;
 using PS.DOMAIN.Entities;
 using System;
 using System.Collections.Generic;
@@ -12,15 +14,16 @@ namespace PS.API.CINE.Controllers
     {
 
         private readonly IFuncionService _service;
+        private readonly IGenericsRepository _repository;
 
-        public FuncionController(IFuncionService service)
+        public FuncionController(IFuncionService service, IGenericsRepository repository)
         {
-
             _service = service;
+            _repository = repository;
         }
-
+        [Route("api/[controller]")]
         [HttpPost]
-        public IActionResult Post([FromQuery] Funciones funciones)
+        public IActionResult Post([FromQuery] FuncionesDTO funciones)
         {
             return new JsonResult(_service.AddFunctionAndReturn(funciones)) { StatusCode = 201 };
         }

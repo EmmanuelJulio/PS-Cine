@@ -12,10 +12,10 @@ namespace PS.APLICATION.Services
 {
     public interface IpeliculaService
     {
-        public List<Peliculas> MostrarPeliculas();
-        public List<Peliculas> MasInformacionDeFilm(int idfilm);
+        public List<PeliculaDTO> MostrarPeliculas();
+        public List<PeliculaDTO> MasInformacionDeFilm(int idfilm);
         public string NombrePeliculaPorId(int idfilm);
-        public Peliculas GetFilm(int id);
+        public PeliculaDTO GetFilm(int id);
     }
 
 
@@ -31,18 +31,18 @@ namespace PS.APLICATION.Services
             this.context = context;
         }
 
-        public Peliculas GetFilm(int id)
+        public PeliculaDTO GetFilm(int id)
         {
-            return (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<Peliculas>();
+            return (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<PeliculaDTO>();
         }
 
-        public List<Peliculas> MasInformacionDeFilm(int idfilm)
+        public List<PeliculaDTO> MasInformacionDeFilm(int idfilm)
         {
             return (from x in context.Peliculas where x.PeliculaId == idfilm select x).ToList();
              
         }
 
-        public List<Peliculas> MostrarPeliculas()
+        public List<PeliculaDTO> MostrarPeliculas()
         {
             return (from x in context.Peliculas select x).ToList();
             

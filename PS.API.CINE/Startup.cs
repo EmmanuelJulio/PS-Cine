@@ -67,6 +67,7 @@ namespace PS.API.CINE
                 return new SqlConnection(connectionString);
 
             });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

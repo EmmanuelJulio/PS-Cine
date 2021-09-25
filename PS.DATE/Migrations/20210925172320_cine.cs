@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PS.DATE.Migrations
 {
-    public partial class TP1ORM : Migration
+    public partial class cine : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
