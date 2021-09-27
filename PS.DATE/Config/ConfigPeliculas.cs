@@ -10,7 +10,7 @@ namespace PS.DATE.Config
 {
     public class ConfigPeliculas
     {
-        public ConfigPeliculas(EntityTypeBuilder<PeliculaDTO> entityTypeBuilder)
+        public ConfigPeliculas(EntityTypeBuilder<Peliculas> entityTypeBuilder)
         {
             entityTypeBuilder.HasKey(x => x.PeliculaId);
             entityTypeBuilder.HasMany(x => x.Funciones).WithOne(m => m.Peliculas).HasForeignKey(x => x.PeliculaId);

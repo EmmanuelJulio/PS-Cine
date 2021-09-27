@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PS.DOMAIN.Entities
 {
-    public class PeliculaDTO
+    public class Peliculas
     {
 
         public int PeliculaId { get; set; }

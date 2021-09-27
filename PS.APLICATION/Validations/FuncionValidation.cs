@@ -11,7 +11,7 @@ namespace PS.APLICATION.Validations
 {
     public interface IFuncionValidation
     {
-        public bool CrearFuncion(int idpelicula, TimeSpan horaFuncion, int salaid);
+        //public bool CrearFuncion(int idpelicula, TimeSpan horaFuncion, int salaid);
         public int VerificarCapacidadDelaFuncion(int salaid, int funcionid);
     }
 
@@ -29,20 +29,20 @@ namespace PS.APLICATION.Validations
             this.context = context;
         }
 
-        public bool CrearFuncion(int idpelicula, TimeSpan horaFuncion, int salaid)
-        {
+        //public bool CrearFuncion(int idpelicula, TimeSpan horaFuncion, int salaid)
+        //{
 
-            if (!service.VerificarHorarioSala(horaFuncion, salaid))
-            {
-                service.AddFunction(new Funciones { Fecha = DateTime.Now, PeliculaId = idpelicula, SalaId = salaid, Horario = horaFuncion });                               
-                Console.WriteLine("se agrego la funcion");
-                return true;
-            }
-            else
-                Console.WriteLine("ya existe una funcion a esa hora en esa sala");
-            return false;
+        //    if (!service.VerificarHorarioSala(horaFuncion, salaid))
+        //    {
+        //        service.AddFunction(new Funciones { Fecha = DateTime.Now, PeliculaId = idpelicula, SalaId = salaid, Horario = horaFuncion });                               
+        //        Console.WriteLine("se agrego la funcion");
+        //        return true;
+        //    }
+        //    else
+        //        Console.WriteLine("ya existe una funcion a esa hora en esa sala");
+        //    return false;
             
-        }
+        //}
 
         public int VerificarCapacidadDelaFuncion(int salaid, int funcionid)
         {

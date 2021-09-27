@@ -22,17 +22,44 @@ namespace PS.API.CINE.Controllers
             _repository = repository;
         }
         [Route("api/[controller]")]
+
+
         [HttpPost]
-        public IActionResult Post([FromQuery] FuncionesDTO funciones)
+        public IActionResult Post([FromBody] FuncionesDTO funciones)
         {
             return new JsonResult(_service.AddFunctionAndReturn(funciones)) { StatusCode = 201 };
         }
+
+
+        [Route("api/[controller]")]
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            return new JsonResult(_service.Delete(id)) { StatusCode = 201 };
+        }
+
+        [Route("api/[controller]")]
         [HttpGet]
+
         public IActionResult GetFunciones()
         {
             try
             {
-                return new JsonResult(_service.OptenerTodasLasFunciones()) { StatusCode = 200 };
+                return new JsonResult(_service.OptenerTodasLasFuncionesDTO()) { StatusCode = 200 };
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+        }
+        [HttpGet]
+        [Route("/funcion/pelicula")]
+        public IActionResult GetFuncionesPelicula (int id)
+        {
+            try
+            {
+                return new JsonResult(_service.GetFuncionesDePelicula(id)) { StatusCode = 200 };
             }
             catch (Exception e)
             {

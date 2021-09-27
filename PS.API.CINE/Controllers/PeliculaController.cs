@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PS.APLICATION.Services;
 using PS.DOMAIN.Comands;
+using PS.DOMAIN.DTOs;
+using PS.DOMAIN.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +28,18 @@ namespace PS.API.CINE.Controllers
         {
             try
             {
-                return new JsonResult(_service.GetFilm(id)) { StatusCode = 201 };
+                return new JsonResult(_service.GetFilm(id)) { StatusCode = 200 };
             }
             catch (Exception e)
             {
                 return BadRequest(new { error = "No se devuelve nada" + e.Message });
             }
+        }
+        [HttpPut]
+        [Route("update")]
+        public IActionResult UpdatePelicula([FromBody] PeliculaDTO pelicula,[FromQuery]int id)
+        {
+            return new JsonResult(_service.UpdatePelicula(pelicula,id)) { StatusCode = 200 };
         }
     }
 }

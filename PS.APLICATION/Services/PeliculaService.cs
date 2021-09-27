@@ -1,7 +1,9 @@
 ﻿using PS.DATE;
 using PS.DATE.Command;
 using PS.DOMAIN.Comands;
+using PS.DOMAIN.DTOs;
 using PS.DOMAIN.Entities;
+using PS.DOMAIN.Queries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +15,10 @@ namespace PS.APLICATION.Services
     public interface IpeliculaService
     {
         public List<PeliculaDTO> MostrarPeliculas();
-        public List<PeliculaDTO> MasInformacionDeFilm(int idfilm);
-        public string NombrePeliculaPorId(int idfilm);
-        public PeliculaDTO GetFilm(int id);
+        public List<Peliculas> MasInformacionDeFilm(int idfilm);
+      
+        public Peliculas GetFilm(int id);
+        object UpdatePelicula(PeliculaDTO pelicula, int id);
     }
 
 
@@ -24,19 +27,21 @@ namespace PS.APLICATION.Services
 
         private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
+        private readonly IPeliculaQuery _query;
 
-        public PeliculaService(IGenericsRepository genericsRepository, ApplicationDbContext context)
+        public PeliculaService(IGenericsRepository genericsRepository, ApplicationDbContext context, IPeliculaQuery query)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;
+            _query = query;
         }
 
-        public PeliculaDTO GetFilm(int id)
+        public Peliculas GetFilm(int id)
         {
-            return (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<PeliculaDTO>();
+            return (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<Peliculas>();
         }
 
-        public List<PeliculaDTO> MasInformacionDeFilm(int idfilm)
+        public List<Peliculas> MasInformacionDeFilm(int idfilm)
         {
             return (from x in context.Peliculas where x.PeliculaId == idfilm select x).ToList();
              
@@ -44,13 +49,27 @@ namespace PS.APLICATION.Services
 
         public List<PeliculaDTO> MostrarPeliculas()
         {
-            return (from x in context.Peliculas select x).ToList();
-            
+            return _query.GetPeliculas();
+
         }
 
-        public string NombrePeliculaPorId(int idfilm)
+      
+
+      
+
+        public object UpdatePelicula(PeliculaDTO pelicula, int id)
         {
-            return (from x in context.Peliculas where x.PeliculaId == idfilm select x.Titulo).FirstOrDefault<string>(); ;
+            Peliculas NuevaPelicula = new Peliculas()
+            {
+                PeliculaId = id,
+                Titulo = pelicula.titulo,
+                Sinospsis = pelicula.sinospsis,
+                Trailer = pelicula.trailer,
+                Poster = pelicula.poster
+
+            };
+            genericsRepository.Update<Peliculas>(NuevaPelicula);
+            return NuevaPelicula;
         }
     }
 }

@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace PS.DOMAIN.DTOs
 {
-    class PeliculaDTO
+    public class PeliculaDTO
     {
-        public int PeliculaId { get; set; }
-      
-        public string Titulo { get; set; }
-       
-        public string Poster { get; set; }
      
-        public string Sinospsis { get; set; }
+        public string titulo { get; set; }
        
-        public string Trailer { get; set; }
+        public string poster { get; set; }
+     
+        public string sinospsis { get; set; }
+       
+        public string trailer { get; set; }
     }
 }

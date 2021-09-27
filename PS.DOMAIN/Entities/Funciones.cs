@@ -15,7 +15,7 @@ namespace PS.DOMAIN.Entities
         public DateTime Fecha { get; set; }
         public TimeSpan Horario { get; set; }
         public virtual ICollection<Tickets> Tickets { get; set; }
-        public virtual PeliculaDTO Peliculas { get; set; }
+        public virtual Peliculas Peliculas { get; set; }
         public virtual Salas Salas { get; set; }
 
 
