@@ -147,7 +147,7 @@ namespace PS.APLICATION.Services
                 {
                     foreach (Funciones funciones in funcion)
                     {
-                        if (funciones.Horario + horasDeFuncionStandar > horario)
+                        if (Convert.ToDateTime(funciones.Horario).TimeOfDay + horasDeFuncionStandar > horario)
                             return yaExisteUnaFuncionEnEsaHora = true;
                     }
                 }       

@@ -14,7 +14,9 @@ namespace PS.APLICATION.Services
 {
     public interface ITicketService
     {
-        object AddTiket(TicketDTO tiket);
+        
+        List<TicketDTO> AddTiket(TicketDTO tiket);
+        int GetTicketsRestantes(int funcionId);
     }
 
     public class TicketService: ITicketService
@@ -31,13 +33,11 @@ namespace PS.APLICATION.Services
             _query = query;
         }
 
-        public object AddTiket(TicketDTO tiket)
+        public List<TicketDTO> AddTiket(TicketDTO tiket)
         {
-            int IdSala = (from x in context.Funciones where x.FuncionId == tiket.funcionId select x.SalaId).FirstOrDefault<int>();
-            int capacidadDeSala = (from x in context.Salas where x.SalasId == IdSala select x.Capacidad).FirstOrDefault<int>();
-            int TiketParaFuncion = (from x in context.Tickets where x.FuncionId == tiket.funcionId select x).Count();
-            List<Tickets> ListaDeTickets = new List<Tickets>();
-            if (capacidadDeSala- TiketParaFuncion > tiket.cantidad)
+
+            List<TicketDTO> ListaDeTickets = new List<TicketDTO>();
+            if (GetTicketsRestantes(tiket.funcionId) > tiket.cantidad)
             {
                 for (int i = 0;i < tiket.cantidad ; i++)
                 {
@@ -48,12 +48,28 @@ namespace PS.APLICATION.Services
                         Usuario = tiket.usuario
                     };
                     genericsRepository.Add<Tickets>(tickets);
-                    ListaDeTickets.Add(tickets);
+                    TicketDTO ticketDTO = new TicketDTO
+                    {
+                        TiketId=tickets.TiketId,
+                        funcionId = tiket.funcionId,
+                        usuario = tiket.usuario,
+                        cantidad = 1
+                    };
+                    ListaDeTickets.Add(ticketDTO);
                 }
                 return ListaDeTickets;
             }
             return null;
         }
 
+        public int GetTicketsRestantes(int funcionId)
+        {
+            int IdSala = (from x in context.Funciones where x.FuncionId == funcionId select x.SalaId).FirstOrDefault<int>();
+            int capacidadDeSala = (from x in context.Salas where x.SalasId == IdSala select x.Capacidad).FirstOrDefault<int>();
+            int TiketParaFuncion = (from x in context.Tickets where x.FuncionId == funcionId select x).Count();
+            return capacidadDeSala - TiketParaFuncion;
+        }
+
+        
     }
 }

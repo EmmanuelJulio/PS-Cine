@@ -26,9 +26,22 @@ namespace PS.API.CINE.Controllers
         {
             return new JsonResult(_service.AddTiket(Tiket)) { StatusCode = 201 };
         }
-        public IActionResult Index()
+
+
+        [HttpGet("{id}/tickets")]
+
+        public IActionResult GetTickets([FromHeader] int id)
         {
-            return View();
+            try
+            {
+                return new JsonResult(_service.GetTicketsRestantes(id)) { StatusCode = 200 };
+            }
+            catch (Exception e)
+            {
+
+                return new JsonResult(e.Message) { StatusCode = 404 };
+            }
         }
+        
     }
 }
