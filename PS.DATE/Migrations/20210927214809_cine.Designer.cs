@@ -10,7 +10,7 @@ using PS.DATE;
 namespace PS.DATE.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210925172320_cine")]
+    [Migration("20210927214809_cine")]
     partial class cine
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
