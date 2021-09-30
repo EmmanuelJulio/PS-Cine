@@ -28,20 +28,7 @@ namespace PS.API.CINE.Controllers
         }
 
 
-        [HttpGet("{id}/tickets")]
-
-        public IActionResult GetTickets([FromHeader] int id)
-        {
-            try
-            {
-                return new JsonResult(_service.GetTicketsRestantes(id)) { StatusCode = 200 };
-            }
-            catch (Exception e)
-            {
-
-                return new JsonResult(e.Message) { StatusCode = 404 };
-            }
-        }
+        
         
     }
 }

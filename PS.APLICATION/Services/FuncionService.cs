@@ -15,20 +15,11 @@ namespace PS.APLICATION.Services
 
     public interface IFuncionService
     {
- 
-        public FuncionesDTO AddFunctionAndReturn(FuncionesDTO entity);
-        public Funciones OptenerFuncionPorId(int idfuncion);
-
-        public List<Funciones> FuncionesDisponibles(int Film);
-
-        public List<Funciones> FuncionesDisponiblesEnSala(int idSala);
-
-        public bool VerificarHorarioSala(TimeSpan horario, int idsala, DateTime fecha);
-        public List<Funciones> OptenerTodasLasFunciones();
+        public int GetTicketsRestantes(int funcionId);
         object Delete(int id);
-        List<FuncionViwDTO> OptenerTodasLasFuncionesDTO();
-       string OptenerNombreDePelicula(int id);
-        List<FuncionesDTO> GetFuncionesDePelicula(int id);
+        public object AddFunctionAndReturn(FuncionesDTO entity);
+        public bool VerificarHorarioSala(TimeSpan horario, int idsala, DateTime fecha);
+        List<FuncionViwDTO> GetFuncionesDePelicula(int id);
     }
 
 
@@ -46,24 +37,34 @@ namespace PS.APLICATION.Services
         }
 
 
-        public FuncionesDTO AddFunctionAndReturn(FuncionesDTO entity)
+        public object AddFunctionAndReturn(FuncionesDTO entity)
         {
-            DateTime fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null);
-            if (!VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay,entity.SalaId, fecha))
+            try
             {
-                var NewFuncion = new Funciones()
-                {
-                    PeliculaId = entity.PeliculaId,
-                    Fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null),
-                  Horario =Convert.ToDateTime(entity.Horario).TimeOfDay,
-                    SalaId = entity.SalaId
-                };
 
-                genericsRepository.Add<Funciones>(NewFuncion);
-                return entity;
+                DateTime fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null);
+                if (!VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay, entity.SalaId, fecha))
+                {
+                    var NewFuncion = new Funciones()
+                    {
+                        PeliculaId = entity.PeliculaId,
+                        Fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null),
+                        Horario = Convert.ToDateTime(entity.Horario).TimeOfDay,
+                        SalaId = entity.SalaId
+                    };
+
+                    genericsRepository.Add<Funciones>(NewFuncion);
+                    return entity;
+
+                }
+                return null;
 
             }
-            return null;
+            catch (Exception e)
+            {
+
+                return e.Message;
+            }
 
         }
 
@@ -73,70 +74,41 @@ namespace PS.APLICATION.Services
             if (Funcion != null)
             {
                 genericsRepository.Delete<Funciones>(Funcion);
-                return Funcion;
+                return "La funcion fue borrada";
             }
             else 
             {
-                return Funcion;
+                return "No existe esa funcion";
             }
             
 
         }
 
-        public List<Funciones> FuncionesDisponibles(int Film)
-        {
-                       
-            return (from x in context.Funciones where x.PeliculaId == Film select x).ToList();
-        }
+      
 
-        public List<Funciones> FuncionesDisponiblesEnSala(int idSala)
-        {
-            return (from x in context.Funciones where x.SalaId == idSala select x).ToList();
-        }
+       
 
-        public List<FuncionesDTO> GetFuncionesDePelicula(int id)
-        {
-            return _query.GuetFuncionesByIdFilm(id);
-        }
-
-        public Funciones OptenerFuncionPorId(int idfuncion)
+        public List<FuncionViwDTO> GetFuncionesDePelicula(int id)
         {
             
-           return (from x in context.Funciones where x.FuncionId == idfuncion select x).FirstOrDefault<Funciones>();
-            
-        }
-
-        public string OptenerNombreDePelicula(int id)
-        {
-            string nombrePelicula = (from x in context.Peliculas where x.PeliculaId == id select x.Titulo).FirstOrDefault<string>();
-            return nombrePelicula;
-        }
-
-        public List<Funciones> OptenerTodasLasFunciones()
-        {
-            return (from x in context.Funciones select x).ToList();
-        }
-
-        public List<FuncionViwDTO> OptenerTodasLasFuncionesDTO()
-        {
-            List<FuncionViwDTO> Funciones = new List<FuncionViwDTO>();
-            var funciones = (from x in context.Funciones select x).ToList();
-            foreach(Funciones funcion in funciones)
+            List<FuncionViwDTO> funcionViwDTOs = new List<FuncionViwDTO>();
+            var funciones= _query.GuetFuncionesByIdFilm(id);
+            foreach (Funciones fun in funciones)
             {
-                FuncionViwDTO _funcion = new FuncionViwDTO
+                FuncionViwDTO Funcion = new FuncionViwDTO
                 {
-                    funcionId=funcion.FuncionId,
-                    PeliculaId = funcion.PeliculaId,
-                    PeliculaNombre = OptenerNombreDePelicula(funcion.PeliculaId),
-                    SalaId = funcion.SalaId,
-                    Fecha = funcion.Fecha.ToString("dd-MM-yyyy"),
-                    Horario = funcion.Horario.ToString(),
+                    funcionId = fun.FuncionId,
+                    PeliculaNombre = (from x in context.Peliculas where x.PeliculaId == fun.PeliculaId select x.Titulo).FirstOrDefault<string>(),
+                    SalaId = fun.SalaId,
+                    Fecha = fun.Fecha.ToShortDateString(),
+                    Horario = fun.Horario.ToString()
                 };
-                Funciones.Add(_funcion);
+                funcionViwDTOs.Add(Funcion);
             }
-            return Funciones;
+            return funcionViwDTOs;
         }
 
+       
 
         public bool VerificarHorarioSala(TimeSpan horario, int idsala,DateTime fecha)
         {
@@ -147,11 +119,19 @@ namespace PS.APLICATION.Services
                 {
                     foreach (Funciones funciones in funcion)
                     {
-                        if (Convert.ToDateTime(funciones.Horario).TimeOfDay + horasDeFuncionStandar > horario)
+
+                        if (funciones.Horario + horasDeFuncionStandar > horario)
                             return yaExisteUnaFuncionEnEsaHora = true;
                     }
                 }       
             return yaExisteUnaFuncionEnEsaHora;
+        }
+        public int GetTicketsRestantes(int funcionId)
+        {
+            int IdSala = (from x in context.Funciones where x.FuncionId == funcionId select x.SalaId).FirstOrDefault<int>();
+            int capacidadDeSala = (from x in context.Salas where x.SalasId == IdSala select x.Capacidad).FirstOrDefault<int>();
+            int TiketParaFuncion = (from x in context.Tickets where x.FuncionId == funcionId select x).Count();
+            return capacidadDeSala - TiketParaFuncion;
         }
     }
 }

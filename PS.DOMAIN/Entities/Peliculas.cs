@@ -17,7 +17,7 @@ namespace PS.DOMAIN.Entities
         public string Poster { get; set; }
         [StringLength(255)]
         public string Sinospsis { get; set; }
-        [StringLength(2000)]
+        [StringLength(255)]
         public string Trailer { get; set; }
         public virtual ICollection<Funciones> Funciones { get; set; }
 

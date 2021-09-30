@@ -9,7 +9,6 @@ namespace PS.DOMAIN.DTOs
     public class FuncionViwDTO
     {
         public int funcionId { get; set; }
-        public int PeliculaId { get; set; }
         public string PeliculaNombre { get; set; }
         public int SalaId { get; set; }
         public string Fecha { get; set; }
