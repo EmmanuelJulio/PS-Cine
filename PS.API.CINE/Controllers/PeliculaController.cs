@@ -32,14 +32,22 @@ namespace PS.API.CINE.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new { error = "No se devuelve nada" + e.Message });
+                return BadRequest(new {e.Message });
             }
         }
         [HttpPut]
         [Route("update")]
         public IActionResult UpdatePelicula([FromBody] PeliculaDTO pelicula,[FromQuery]int id)
         {
-            return new JsonResult(_service.UpdatePelicula(pelicula,id)) { StatusCode = 200 };
+            try
+            {
+                return new JsonResult(_service.UpdatePelicula(pelicula, id)) { StatusCode = 200 };
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(new { e.Message });
+            }
         }
     }
 }
