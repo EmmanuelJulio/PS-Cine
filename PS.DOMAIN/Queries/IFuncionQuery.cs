@@ -1,4 +1,5 @@
 ﻿using PS.DOMAIN.DTOs;
+using PS.DOMAIN.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace PS.DOMAIN.Queries
 {
     public interface IFuncionQuery
     {
-        List<FuncionesDTO> GuetFuncionesByIdFilm(int id);
+        List<Funciones> GuetFuncionesByIdFilm(int id);
     }
 }

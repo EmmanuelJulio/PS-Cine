@@ -38,21 +38,7 @@ namespace PS.API.CINE.Controllers
             return new JsonResult(_service.Delete(id)) { StatusCode = 201 };
         }
 
-        [Route("api/[controller]")]
-        [HttpGet]
-
-        public IActionResult GetFunciones()
-        {
-            try
-            {
-                return new JsonResult(_service.OptenerTodasLasFuncionesDTO()) { StatusCode = 200 };
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e.Message);
-            }
-        }
+        
         [HttpGet]
         [Route("/funcion/pelicula")]
         public IActionResult GetFuncionesPelicula (int id)
@@ -65,6 +51,22 @@ namespace PS.API.CINE.Controllers
             {
 
                 return BadRequest(e.Message);
+            }
+        }
+        [HttpGet("{id}/tickets")]
+
+        public async Task<ActionResult<int>> GetTicketsRestantes(int id)
+        {
+            try
+            {
+                return new JsonResult(_service.GetTicketsRestantes(id)) { StatusCode = 200 };
+
+                
+            }
+            catch (Exception e)
+            {
+
+                return new JsonResult(e.Message) { StatusCode = 404 };
             }
         }
     }

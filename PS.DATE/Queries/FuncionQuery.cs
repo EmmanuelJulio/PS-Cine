@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SqlKata.Execution;
 using PS.DOMAIN.DTOs;
+using PS.DOMAIN.Entities;
 
 namespace PS.DATE.Queries
 {
@@ -22,11 +23,11 @@ namespace PS.DATE.Queries
             this.sqlKataCompiler = sqlKataCompiler;
         }
 
-        public List<FuncionesDTO> GuetFuncionesByIdFilm(int id)
+        public List<Funciones> GuetFuncionesByIdFilm(int id)
         {
             var db = new SqlKata.Execution.QueryFactory(connection, sqlKataCompiler);
-            var query = db.Query("Funciones").Where("PeliculaId", "=", id).Select();
-            return query.Get<FuncionesDTO>().ToList();
+            var query = db.Query("Funciones").Where("PeliculaId", "=", id).Where("Fecha",">=",DateTime.Now).Select();
+            return query.Get<Funciones>().ToList();
         }
     }
 }
