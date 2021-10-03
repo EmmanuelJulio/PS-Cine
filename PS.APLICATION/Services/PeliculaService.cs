@@ -17,7 +17,7 @@ namespace PS.APLICATION.Services
         public List<PeliculaDTO> MostrarPeliculas();
         public List<Peliculas> MasInformacionDeFilm(int idfilm);
       
-        public Peliculas GetFilm(int id);
+        public Object GetFilm(int id);
         object UpdatePelicula(PeliculaDTO pelicula, int id);
     }
 
@@ -36,9 +36,17 @@ namespace PS.APLICATION.Services
             _query = query;
         }
 
-        public Peliculas GetFilm(int id)
+        public object GetFilm(int id)
         {
-            return (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<Peliculas>();
+            Peliculas Pelicula = (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<Peliculas>();
+            PeliculaDTO peliculaDTO = new PeliculaDTO
+            {
+                titulo = Pelicula.Titulo,
+                poster = Pelicula.Poster,
+                trailer = Pelicula.Trailer,
+                sinospsis = Pelicula.Sinospsis
+            };
+            return peliculaDTO;
         }
 
         public List<Peliculas> MasInformacionDeFilm(int idfilm)
