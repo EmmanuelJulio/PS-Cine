@@ -21,7 +21,7 @@ namespace PS.APLICATION.Services
         public bool VerificarHorarioSala(TimeSpan horario, int idsala, DateTime fecha);
         List<FuncionViwDTO> GetFuncionesDePelicula(int id);
         object GetFuncionesCondicional(string fecha, string titulo);
-        bool ValidarPkPelicula(int peliculaId);
+        public bool ValidarPkPelicula(int peliculaId);
     }
 
 
@@ -73,14 +73,7 @@ namespace PS.APLICATION.Services
 
         }
 
-        private bool ValidarPkPelicula(int peliculaId)
-        {
-            Peliculas pelicula = (from x in context.Peliculas where x.PeliculaId == peliculaId select x).FirstOrDefault<Peliculas>();
-            if (pelicula != null)
-                return true;
-            else
-                return false;
-        }
+       
 
         public object Delete(int id)
         {
@@ -151,9 +144,18 @@ namespace PS.APLICATION.Services
         public object GetFuncionesCondicional(string fecha, string titulo)
         {
             if (string.IsNullOrEmpty(fecha))
-                fecha = DateTime.Now.ToString();
+                fecha = DateTime.Now.ToString("dd/MM/yyyy");
 
             return _query.GetPeliculasCondicional(fecha, titulo);
+        }
+
+        public bool ValidarPkPelicula(int peliculaId)
+        {
+            Peliculas pelicula = (from x in context.Peliculas where x.PeliculaId == peliculaId select x).FirstOrDefault<Peliculas>();
+            if (pelicula != null)
+                return true;
+            else
+                return false;
         }
     }
 }

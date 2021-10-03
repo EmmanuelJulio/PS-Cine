@@ -27,7 +27,7 @@ namespace PS.DATE.Queries
         {
             var db = new SqlKata.Execution.QueryFactory(connection, sqlKataCompiler);
             var idpelicula = db.Query("Peliculas").Where("Titulo", "=", titulo).Select("PeliculaId").Get<int>();
-            var query = db.Query("Funciones").Where("PeliculaId", "=", idpelicula).Where("Fecha", "=", fecha);
+            var query = db.Query("Funciones").Where("PeliculaId", "=", idpelicula).Where("Fecha", ">=", fecha);
             return query.Get().ToList();
         }
 

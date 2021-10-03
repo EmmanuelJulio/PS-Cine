@@ -40,7 +40,7 @@ namespace PS.API.CINE.Controllers
 
 
         [HttpGet]
-        [Route("/funcion/pelicula")]
+        [Route("api/funcion/pelicula")]
         public IActionResult GetFuncionesPelicula(int id)
         {
             try
