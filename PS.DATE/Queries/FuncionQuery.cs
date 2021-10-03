@@ -23,6 +23,14 @@ namespace PS.DATE.Queries
             this.sqlKataCompiler = sqlKataCompiler;
         }
 
+        public object GetPeliculasCondicional(string fecha, string titulo)
+        {
+            var db = new SqlKata.Execution.QueryFactory(connection, sqlKataCompiler);
+            var idpelicula = db.Query("Peliculas").Where("Titulo", "=", titulo).Select("PeliculaId").Get<int>();
+            var query = db.Query("Funciones").Where("PeliculaId", "=", idpelicula).Where("Fecha", "=", fecha);
+            return query.Get().ToList();
+        }
+
         public List<Funciones> GuetFuncionesByIdFilm(int id)
         {
             var db = new SqlKata.Execution.QueryFactory(connection, sqlKataCompiler);

@@ -11,5 +11,6 @@ namespace PS.DOMAIN.Queries
     public interface IFuncionQuery
     {
         List<Funciones> GuetFuncionesByIdFilm(int id);
+        object GetPeliculasCondicional(string fecha, string titulo);
     }
 }
