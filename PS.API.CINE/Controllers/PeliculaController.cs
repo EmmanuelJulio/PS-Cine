@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace PS.API.CINE.Controllers
 {
     [ApiController]
-    [Route("api/Pelicula")]
+    [Route("api/pelicula")]
     public class PeliculaController : Controller
     {
         private readonly IGenericsRepository _repocitory;
@@ -36,7 +36,7 @@ namespace PS.API.CINE.Controllers
             }
         }
         [HttpPut]
-        [Route("update")]
+       
         public IActionResult UpdatePelicula([FromBody] PeliculaDTO pelicula,[FromQuery]int id)
         {
             try
@@ -45,7 +45,6 @@ namespace PS.API.CINE.Controllers
             }
             catch (Exception e)
             {
-
                 return BadRequest(new { e.Message });
             }
         }

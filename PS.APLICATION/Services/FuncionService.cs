@@ -20,6 +20,8 @@ namespace PS.APLICATION.Services
         public object AddFunctionAndReturn(FuncionesDTO entity);
         public bool VerificarHorarioSala(TimeSpan horario, int idsala, DateTime fecha);
         List<FuncionViwDTO> GetFuncionesDePelicula(int id);
+        object GetFuncionesCondicional(string fecha, string titulo);
+        bool ValidarPkPelicula(int peliculaId);
     }
 
 
@@ -42,23 +44,26 @@ namespace PS.APLICATION.Services
             try
             {
 
-                DateTime fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null);
-                if (!VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay, entity.SalaId, fecha))
+                if (ValidarPkPelicula(entity.PeliculaId))
                 {
-                    var NewFuncion = new Funciones()
+                    DateTime fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null);
+                    if (!VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay, entity.SalaId, fecha))
                     {
-                        PeliculaId = entity.PeliculaId,
-                        Fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null),
-                        Horario = Convert.ToDateTime(entity.Horario).TimeOfDay,
-                        SalaId = entity.SalaId
-                    };
+                        var NewFuncion = new Funciones()
+                        {
+                            PeliculaId = entity.PeliculaId,
+                            Fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null),
+                            Horario = Convert.ToDateTime(entity.Horario).TimeOfDay,
+                            SalaId = entity.SalaId
+                        };
 
-                    genericsRepository.Add<Funciones>(NewFuncion);
-                    return entity;
+                        genericsRepository.Add<Funciones>(NewFuncion);
+                        return entity;
 
+                    }
+                    return "Ese espacio horario ya esta asignado"; 
                 }
-                return null;
-
+                return "No existe esa pelicula";
             }
             catch (Exception e)
             {
@@ -66,6 +71,15 @@ namespace PS.APLICATION.Services
                 return e.Message;
             }
 
+        }
+
+        private bool ValidarPkPelicula(int peliculaId)
+        {
+            Peliculas pelicula = (from x in context.Peliculas where x.PeliculaId == peliculaId select x).FirstOrDefault<Peliculas>();
+            if (pelicula != null)
+                return true;
+            else
+                return false;
         }
 
         public object Delete(int id)
@@ -113,7 +127,7 @@ namespace PS.APLICATION.Services
         public bool VerificarHorarioSala(TimeSpan horario, int idsala,DateTime fecha)
         {
             TimeSpan horasDeFuncionStandar =DateTime.Parse("2:30:00").TimeOfDay;
-            bool yaExisteUnaFuncionEnEsaHora = false;       
+                
                 List<Funciones> funcion = (from x in context.Funciones where x.SalaId == idsala & x.Fecha==fecha select x).ToList();
             if (funcion.Any())
                 {
@@ -121,10 +135,10 @@ namespace PS.APLICATION.Services
                     {
 
                         if (funciones.Horario + horasDeFuncionStandar > horario)
-                            return yaExisteUnaFuncionEnEsaHora = true;
+                            return true;
                     }
                 }       
-            return yaExisteUnaFuncionEnEsaHora;
+            return false;
         }
         public int GetTicketsRestantes(int funcionId)
         {
@@ -132,6 +146,14 @@ namespace PS.APLICATION.Services
             int capacidadDeSala = (from x in context.Salas where x.SalasId == IdSala select x.Capacidad).FirstOrDefault<int>();
             int TiketParaFuncion = (from x in context.Tickets where x.FuncionId == funcionId select x).Count();
             return capacidadDeSala - TiketParaFuncion;
+        }
+
+        public object GetFuncionesCondicional(string fecha, string titulo)
+        {
+            if (string.IsNullOrEmpty(fecha))
+                fecha = DateTime.Now.ToString();
+
+            return _query.GetPeliculasCondicional(fecha, titulo);
         }
     }
 }

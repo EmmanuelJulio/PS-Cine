@@ -19,7 +19,7 @@ namespace PS.API.CINE.Controllers
             _repocitory = repocitory;
             _service = service;
         }
-        [Route("api/[controller]")]
+        [Route("api/tickets")]
         [HttpPost]
 
         public IActionResult Post([FromBody] TicketDTO Tiket)

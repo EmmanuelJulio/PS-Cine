@@ -21,7 +21,7 @@ namespace PS.API.CINE.Controllers
             _service = service;
             _repository = repository;
         }
-        [Route("api/[controller]")]
+        [Route("api/funcion")]
 
 
         [HttpPost]
@@ -31,17 +31,17 @@ namespace PS.API.CINE.Controllers
         }
 
 
-        [Route("api/[controller]")]
+        [Route("api/funcion")]
         [HttpDelete]
         public IActionResult Delete(int id)
         {
             return new JsonResult(_service.Delete(id)) { StatusCode = 201 };
         }
 
-        
+
         [HttpGet]
         [Route("/funcion/pelicula")]
-        public IActionResult GetFuncionesPelicula (int id)
+        public IActionResult GetFuncionesPelicula(int id)
         {
             try
             {
@@ -53,15 +53,45 @@ namespace PS.API.CINE.Controllers
                 return BadRequest(e.Message);
             }
         }
-        [HttpGet("{id}/tickets")]
-
-        public async Task<ActionResult<int>> GetTicketsRestantes(int id)
+        [HttpGet("api/funcion/{id}/tickets")]
+        public IActionResult GetTicketsRestantes(int id)
         {
             try
             {
                 return new JsonResult(_service.GetTicketsRestantes(id)) { StatusCode = 200 };
 
-                
+
+            }
+            catch (Exception e)
+            {
+
+                return new JsonResult(e.Message) { StatusCode = 404 };
+            }
+        }
+        [HttpGet]
+        public IActionResult GetTiketsRestantes(int id)
+        {
+            try
+            {
+                return new JsonResult(_service.GetTicketsRestantes(id)) { StatusCode = 200 };
+
+
+            }
+            catch (Exception e)
+            {
+
+                return new JsonResult(e.Message) { StatusCode = 404 };
+            }
+        }
+        [Route("api/funcion")]
+        [HttpGet]
+        public IActionResult GetFuncionesFechaNombre([FromQuery]string Fecha,[FromQuery]string Titulo)
+        {
+            try
+            {
+                return new JsonResult(_service.GetFuncionesCondicional(Fecha,Titulo)) { StatusCode = 200 };
+
+
             }
             catch (Exception e)
             {
