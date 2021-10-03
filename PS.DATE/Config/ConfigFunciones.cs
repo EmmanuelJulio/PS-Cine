@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PS.DATE.Config
 {
     public class ConfigFunciones
-    {
+    { 
         public ConfigFunciones(EntityTypeBuilder<Funciones> entityTypeBuilder)
         {
             entityTypeBuilder.HasKey(x => x.FuncionId);

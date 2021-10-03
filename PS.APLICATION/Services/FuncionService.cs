@@ -22,6 +22,7 @@ namespace PS.APLICATION.Services
         List<FuncionViwDTO> GetFuncionesDePelicula(int id);
         object GetFuncionesCondicional(string fecha, string titulo);
         public bool ValidarPkPelicula(int peliculaId);
+        public String GetNombrePelicula(int id);
     }
 
 
@@ -146,7 +147,24 @@ namespace PS.APLICATION.Services
             if (string.IsNullOrEmpty(fecha))
                 fecha = DateTime.Now.ToString("dd/MM/yyyy");
 
-            return _query.GetPeliculasCondicional(fecha, titulo);
+           // return _query.GetPeliculasCondicional(fecha, titulo);
+            int idpelicula = (from x in context.Peliculas where x.Titulo == titulo select x.PeliculaId).FirstOrDefault<int>();
+            var Query = (from x in context.Funciones where x.PeliculaId == idpelicula | x.Fecha >= Convert.ToDateTime(fecha) select x);
+            
+            List<FuncionViwDTO> funcionViwDTO = new List<FuncionViwDTO>();
+            foreach (Funciones func in Query)
+            {
+                FuncionViwDTO Funcio = new FuncionViwDTO()
+                {
+                    funcionId = func.FuncionId,
+                    PeliculaNombre = GetNombrePelicula(func.PeliculaId),
+                    SalaId = func.SalaId,
+                    Fecha = func.Fecha.ToString("dd/MM/yyyy"),
+                    Horario = func.Horario.ToString()
+                };
+                funcionViwDTO.Add(Funcio);
+            }
+            return funcionViwDTO;
         }
 
         public bool ValidarPkPelicula(int peliculaId)
@@ -156,6 +174,11 @@ namespace PS.APLICATION.Services
                 return true;
             else
                 return false;
+        }
+
+        public string GetNombrePelicula(int id)
+        {
+            return (from x in context.Peliculas where x.PeliculaId == id select x.Titulo).FirstOrDefault<string>();
         }
     }
 }
