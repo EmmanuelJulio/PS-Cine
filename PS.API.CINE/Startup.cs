@@ -21,6 +21,7 @@ using PS.DATE.Command;
 using PS.APLICATION.Services;
 using PS.DOMAIN.Queries;
 using PS.DATE.Queries;
+using PS.APLICATION.Validations;
 //using SqlKata.Compilers;
 
 namespace PS.API.CINE
@@ -41,7 +42,7 @@ namespace PS.API.CINE
             services.AddControllers();
             var connectionString = Configuration.GetSection("ConnectionString").Value;
             services.AddDbContext<ApplicationDbContext>(opciones => opciones.UseSqlServer(connectionString));
-             services.AddTransient<Compiler, SqlServerCompiler>();
+            services.AddTransient<Compiler, SqlServerCompiler>();
             services.AddTransient<IDbConnection>(b => {
                 return new SqlConnection(connectionString);
             });
@@ -58,6 +59,7 @@ namespace PS.API.CINE
             services.AddTransient<ITiketsQuery, TiketQuery>();
             services.AddTransient<ISalaService, SalaService>();
             services.AddTransient<ISalasQuery, SalasQuery>();
+            services.AddTransient<IFuncionValidation, FuncionValidation>();
             services.AddCors(options =>
             {
                 options.AddPolicy("AnyAllow", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
@@ -67,11 +69,12 @@ namespace PS.API.CINE
                 return new SqlConnection(connectionString);
 
             });
+            
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
         {
             if (env.IsDevelopment())
             {
@@ -90,6 +93,10 @@ namespace PS.API.CINE
             {
                 endpoints.MapControllers();
             });
+            context.Database.Migrate();
         }
+
+
+   
     }
 }

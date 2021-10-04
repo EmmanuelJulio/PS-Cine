@@ -1,4 +1,6 @@
-﻿using PS.DATE;
+﻿using Microsoft.EntityFrameworkCore;
+using PS.APLICATION.Validations;
+using PS.DATE;
 using PS.DATE.Command;
 using PS.DOMAIN.Comands;
 using PS.DOMAIN.DTOs;
@@ -20,7 +22,7 @@ namespace PS.APLICATION.Services
         public object AddFunctionAndReturn(FuncionesDTO entity);
         public bool VerificarHorarioSala(TimeSpan horario, int idsala, DateTime fecha);
         List<FuncionViwDTO> GetFuncionesDePelicula(int id);
-        object GetFuncionesCondicional(string fecha, string titulo);
+        Task<object> GetFuncionesCondicional(string fecha, string titulo);
         public bool ValidarPkPelicula(int peliculaId);
         public String GetNombrePelicula(int id);
     }
@@ -31,12 +33,14 @@ namespace PS.APLICATION.Services
         private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
         private readonly IFuncionQuery _query;
+        private readonly IFuncionValidation validation;
 
-        public FuncionService(IGenericsRepository genericsRepository, ApplicationDbContext context, IFuncionQuery query)
+        public FuncionService(IGenericsRepository genericsRepository, ApplicationDbContext context, IFuncionQuery query, IFuncionValidation validation)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;
             _query = query;
+            this.validation = validation;
         }
 
 
@@ -142,29 +146,62 @@ namespace PS.APLICATION.Services
             return capacidadDeSala - TiketParaFuncion;
         }
 
-        public object GetFuncionesCondicional(string fecha, string titulo)
+        public async Task<object> GetFuncionesCondicional(string fecha, string titulo)
         {
-            if (string.IsNullOrEmpty(fecha))
-                fecha = DateTime.Now.ToString("dd/MM/yyyy");
+            string validation_response = null;
+            //if (string.IsNullOrEmpty(fecha))
+            //    fecha = DateTime.Now.ToString("dd/MM/yyyy");
 
-           // return _query.GetPeliculasCondicional(fecha, titulo);
-            int idpelicula = (from x in context.Peliculas where x.Titulo == titulo select x.PeliculaId).FirstOrDefault<int>();
-            var Query = (from x in context.Funciones where x.PeliculaId == idpelicula | x.Fecha >= Convert.ToDateTime(fecha) select x);
-            
-            List<FuncionViwDTO> funcionViwDTO = new List<FuncionViwDTO>();
-            foreach (Funciones func in Query)
+            if (!validation.ValidateParametersRequest(fecha, titulo))
             {
-                FuncionViwDTO Funcio = new FuncionViwDTO()
-                {
-                    funcionId = func.FuncionId,
-                    PeliculaNombre = GetNombrePelicula(func.PeliculaId),
-                    SalaId = func.SalaId,
-                    Fecha = func.Fecha.ToString("dd/MM/yyyy"),
-                    Horario = func.Horario.ToString()
-                };
-                funcionViwDTO.Add(Funcio);
+                validation_response = "Debe completar almenos un campo";
+                return validation_response;
             }
-            return funcionViwDTO;
+
+            if (string.IsNullOrEmpty(fecha))
+            {
+                int idpelicula = await (from x in context.Peliculas where x.Titulo == titulo select x.PeliculaId).FirstOrDefaultAsync<int>();
+                var Query = await (from x in context.Funciones where x.PeliculaId == idpelicula select x).ToListAsync();
+                List<FuncionViwDTO> funcionViwDTO = new List<FuncionViwDTO>();
+                foreach (Funciones func in Query)
+                {
+                    funcionViwDTO.Add(new FuncionViwDTO
+                    {
+                        funcionId = func.FuncionId,
+                        PeliculaNombre = GetNombrePelicula(func.PeliculaId),
+                        SalaId = func.SalaId,
+                        Fecha = func.Fecha.ToString("dd/MM/yyyy"),
+                        Horario = func.Horario.ToString()
+                    });
+                }
+                return funcionViwDTO;
+            }
+            else if(!string.IsNullOrEmpty(fecha) && !string.IsNullOrEmpty(titulo))
+            {
+                int idpelicula = await (from x in context.Peliculas where x.Titulo == titulo select x.PeliculaId).FirstOrDefaultAsync<int>();
+                var Query = await (from x in context.Funciones where x.PeliculaId == idpelicula | x.Fecha >= Convert.ToDateTime(fecha) select x).ToListAsync();
+                List<FuncionViwDTO> funcionViwDTO = new List<FuncionViwDTO>();
+                foreach (Funciones func in Query)
+                {
+                    funcionViwDTO.Add(new FuncionViwDTO
+                    {
+                        funcionId = func.FuncionId,
+                        PeliculaNombre = GetNombrePelicula(func.PeliculaId),
+                        SalaId = func.SalaId,
+                        Fecha = func.Fecha.ToString("dd/MM/yyyy"),
+                        Horario = func.Horario.ToString()
+                    });
+                }
+                return funcionViwDTO;
+            }
+
+            var queryDTO = await (from x in context.Funciones
+                                  join Peliculas in context.Peliculas on x.PeliculaId equals Peliculas.PeliculaId
+                                  where x.Fecha == Convert.ToDateTime(fecha)
+                                  select new FuncionViwDTO { funcionId = x.FuncionId, PeliculaNombre = Peliculas.Titulo, SalaId = x.SalaId, Fecha = x.Fecha.ToString(), Horario = x.Horario.ToString() }
+                          ).ToListAsync<FuncionViwDTO>();
+
+            return queryDTO;
         }
 
         public bool ValidarPkPelicula(int peliculaId)

@@ -85,11 +85,14 @@ namespace PS.API.CINE.Controllers
         }
         [Route("api/funcion")]
         [HttpGet]
-        public IActionResult GetFuncionesFechaNombre([FromQuery]string Fecha,[FromQuery]string Titulo)
+        public async Task<IActionResult> GetFuncionesFechaNombre([FromQuery]string Fecha,[FromQuery]string Titulo)
         {
             try
             {
-                return new JsonResult(_service.GetFuncionesCondicional(Fecha,Titulo)) { StatusCode = 200 };
+                var response = new JsonResult(await _service.GetFuncionesCondicional(Fecha, Titulo));
+                if(response.Value.ToString() == "Debe completar almenos un campo")
+                    return new JsonResult("Debe completar almenos un campo") { StatusCode = 400 };
+                return  new JsonResult(response) { StatusCode = 200 };
 
 
             }
