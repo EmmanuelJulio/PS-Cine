@@ -1,4 +1,5 @@
 ﻿using PS.DOMAIN.DTOs;
+using PS.DOMAIN.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,10 @@ namespace PS.DOMAIN.Queries
 {
     public interface IPeliculaQuery
     {
-        List<PeliculaDTO> GetPeliculas();
+        
+
+        object GetPeliculas();
+        object GetPeliculasCompleta();
+        object GetPeliculaDTO(int id);
     }
 }

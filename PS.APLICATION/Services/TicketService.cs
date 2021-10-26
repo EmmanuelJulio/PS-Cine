@@ -1,4 +1,5 @@
-﻿using PS.DATE;
+﻿using PS.APLICATION.Validations;
+using PS.DATE;
 using PS.DATE.Command;
 using PS.DOMAIN.Comands;
 using PS.DOMAIN.DTOs;
@@ -14,8 +15,8 @@ namespace PS.APLICATION.Services
 {
     public interface ITicketService
     {
-        
-        List<TicketDTO> AddTiket(TicketDTO tiket);
+
+        object AddTiket(TicketDTO tiket);
         int GetTicketsRestantes(int funcionId);
     }
 
@@ -25,41 +26,51 @@ namespace PS.APLICATION.Services
         private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
         private readonly ITiketsQuery _query;
+        private readonly IFuncionValidation funcionValidation;
 
-        public TicketService(IGenericsRepository genericsRepository, ApplicationDbContext context, ITiketsQuery query)
+        public TicketService(IGenericsRepository genericsRepository, ApplicationDbContext context, ITiketsQuery query, IFuncionValidation funcionValidation)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;
             _query = query;
+            this.funcionValidation = funcionValidation;
         }
 
-        public List<TicketDTO> AddTiket(TicketDTO tiket)
+        public object AddTiket(TicketDTO tiket)
         {
 
-            List<TicketDTO> ListaDeTickets = new List<TicketDTO>();
-            if (GetTicketsRestantes(tiket.funcionId) > tiket.cantidad)
+            if (funcionValidation.ValidarFuncion(tiket.funcionId))
             {
-                for (int i = 0;i < tiket.cantidad ; i++)
+                List<TicketDTO> ListaDeTickets = new List<TicketDTO>();
+                if (GetTicketsRestantes(tiket.funcionId) >=tiket.cantidad)
                 {
-                    Tickets tickets = new Tickets
+                    for (int i = 0; i < tiket.cantidad; i++)
                     {
-                        TiketId = Guid.NewGuid(),
-                        FuncionId = tiket.funcionId,
-                        Usuario = tiket.usuario
-                    };
-                    genericsRepository.Add<Tickets>(tickets);
-                    TicketDTO ticketDTO = new TicketDTO
-                    {
-                        TiketId=tickets.TiketId,
-                        funcionId = tiket.funcionId,
-                        usuario = tiket.usuario,
-                        cantidad = 1
-                    };
-                    ListaDeTickets.Add(ticketDTO);
+                        Tickets tickets = new Tickets
+                        {
+                            TiketId = Guid.NewGuid(),
+                            FuncionId = tiket.funcionId,
+                            Usuario = tiket.usuario
+                        };
+                        genericsRepository.Add<Tickets>(tickets);
+
+                        ListaDeTickets.Add(new TicketDTO
+                        {
+
+                            funcionId = tiket.funcionId,
+                            usuario = tiket.usuario,
+                            cantidad = 1
+                        });
+
+                    }
+                    return ListaDeTickets;
                 }
-                return ListaDeTickets;
+                return "No existen tantos cupos para esa funcion"; 
             }
-            return null;
+            else
+            {
+                return "No existe esa funcion";
+            }
         }
 
         public int GetTicketsRestantes(int funcionId)

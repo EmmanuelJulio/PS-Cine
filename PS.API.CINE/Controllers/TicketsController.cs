@@ -24,7 +24,15 @@ namespace PS.API.CINE.Controllers
 
         public IActionResult Post([FromBody] TicketDTO Tiket)
         {
-            return new JsonResult(_service.AddTiket(Tiket)) { StatusCode = 201 };
+            try
+            {
+                return new JsonResult(_service.AddTiket(Tiket)) { StatusCode = 201 };
+            }
+            catch (Exception e)
+            {
+
+                return new JsonResult(BadRequest(e.Message)) { StatusCode = 400 };
+            }
         }
 
 

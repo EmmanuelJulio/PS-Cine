@@ -60,6 +60,10 @@ namespace PS.API.CINE
             services.AddTransient<ISalaService, SalaService>();
             services.AddTransient<ISalasQuery, SalasQuery>();
             services.AddTransient<IFuncionValidation, FuncionValidation>();
+            services.AddTransient<ISalaValidation, SalaValidation>();
+            services.AddTransient<IPeliculaValidation, PeliculaValidation>();
+
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AnyAllow", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
@@ -69,11 +73,11 @@ namespace PS.API.CINE
                 return new SqlConnection(connectionString);
 
             });
-            
+
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
         {
             if (env.IsDevelopment())

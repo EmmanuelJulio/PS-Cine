@@ -12,9 +12,8 @@ namespace PS.DOMAIN.DTOs
         public string titulo { get; set; }
        
         public string poster { get; set; }
-     
-        public string sinospsis { get; set; }
        
         public string trailer { get; set; }
+        public string sinopsis { get; set; }
     }
 }

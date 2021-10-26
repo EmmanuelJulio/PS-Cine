@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PS.DOMAIN.DTOs
 {
-    public class FuncionViwDTO
+    public class FuncionByIdDTO
     {
         public int funcionId { get; set; }
         public string PeliculaNombre { get; set; }
@@ -15,5 +15,6 @@ namespace PS.DOMAIN.DTOs
         public int SalaId { get; set; }
         public string Fecha { get; set; }
         public string Horario { get; set; }
+        public string video { get; set; }
     }
 }

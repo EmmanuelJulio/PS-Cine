@@ -27,80 +27,116 @@ namespace PS.API.CINE.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] FuncionesDTO funciones)
         {
-            return new JsonResult(_service.AddFunctionAndReturn(funciones)) { StatusCode = 201 };
+
+
+            ResponseDTO<FuncionesDTO> response = _service.AddFunctionAndReturn(funciones);
+
+            if (response.Response.Any())
+            {
+                return new JsonResult(response.Response) { StatusCode = 400 };
+            }
+            else
+            {
+                return new JsonResult(response.Data) { StatusCode = 201 };
+            }
         }
 
 
-        [Route("api/funcion")]
+        [Route("api/funcion/{id}")]
         [HttpDelete]
         public IActionResult Delete(int id)
         {
-            return new JsonResult(_service.Delete(id)) { StatusCode = 201 };
+
+            ResponseDTO<object> response = _service.Delete(id);
+
+            if (response.Response.Any())
+            {
+                return new JsonResult(response.Response) { StatusCode = 400 };
+            }
+            else
+            {
+                return new JsonResult(response.Data) { StatusCode = 201 };
+            }
+
+
+
         }
 
 
         [HttpGet]
-        [Route("api/funcion/pelicula")]
-        public IActionResult GetFuncionesPelicula(int id)
+        [Route("api/funcion/pelicula/{peliculaId}")]
+        public IActionResult GetFuncionesPelicula(int peliculaId)
         {
-            try
-            {
-                return new JsonResult(_service.GetFuncionesDePelicula(id)) { StatusCode = 200 };
-            }
-            catch (Exception e)
-            {
 
-                return BadRequest(e.Message);
+            ResponseDTO<object> response = _service.GetFuncionesDePelicula(peliculaId);
+
+            if (response.Response.Any())
+            {
+                return new JsonResult(response.Response) { StatusCode = 400 };
             }
+            else
+            {
+                return new JsonResult(response.Data) { StatusCode = 201 };
+            }
+
+
+
+
         }
         [HttpGet("api/funcion/{id}/tickets")]
         public IActionResult GetTicketsRestantes(int id)
         {
-            try
+
+            ResponseDTO<object> response = _service.GetTicketsRestantes(id);
+
+            if (response.Response.Any())
             {
-                return new JsonResult(_service.GetTicketsRestantes(id)) { StatusCode = 200 };
-
-
+                return new JsonResult(response.Response) { StatusCode = 400 };
             }
-            catch (Exception e)
+            else
             {
-
-                return new JsonResult(e.Message) { StatusCode = 404 };
+                return new JsonResult(response.Data) { StatusCode = 200};
             }
+           
         }
-        [HttpGet]
-        public IActionResult GetTiketsRestantes(int id)
-        {
-            try
-            {
-                return new JsonResult(_service.GetTicketsRestantes(id)) { StatusCode = 200 };
-
-
-            }
-            catch (Exception e)
-            {
-
-                return new JsonResult(e.Message) { StatusCode = 404 };
-            }
-        }
+      
         [Route("api/funcion")]
         [HttpGet]
-        public async Task<IActionResult> GetFuncionesFechaNombre([FromQuery]string Fecha,[FromQuery]string Titulo)
+        public IActionResult GetFuncionesFechaNombre([FromQuery]string Fecha="",[FromQuery]string Titulo="")
         {
-            try
+            var fecha = Fecha;
+            if (string.IsNullOrEmpty(fecha))
+                fecha = DateTime.Today.ToString("yyyy/MM/dd");
+               
+
+
+            ResponseDTO<object> response = _service.GetFuncionesCondicional(fecha, Titulo);
+
+            if (response.Response.Any())
             {
-                var response = new JsonResult(await _service.GetFuncionesCondicional(Fecha, Titulo));
-                if(response.Value.ToString() == "Debe completar almenos un campo")
-                    return new JsonResult("Debe completar almenos un campo") { StatusCode = 400 };
-                return  new JsonResult(response) { StatusCode = 200 };
-
-
+                return new JsonResult(response.Response) { StatusCode = 400 };
             }
-            catch (Exception e)
+            else
             {
-
-                return new JsonResult(e.Message) { StatusCode = 404 };
+                return new JsonResult(response.Data) { StatusCode = 200 };
             }
+
+        }
+        [Route("api/funcion/id")]
+        [HttpGet]
+        public IActionResult GetFuncionByIdFilm(int id)
+        {
+            ResponseDTO<object> response = _service.GetFuncionById(id);
+
+            if (response.Response.Any())
+            {
+                return new JsonResult(response.Response) { StatusCode = 400 };
+            }
+            else
+            {
+                return new JsonResult(response.Data) { StatusCode = 200 };
+            }
+
         }
     }
 }

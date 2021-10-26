@@ -17,42 +17,49 @@ namespace PS.APLICATION.Services
 
     public interface IFuncionService
     {
-        public int GetTicketsRestantes(int funcionId);
-        object Delete(int id);
-        public object AddFunctionAndReturn(FuncionesDTO entity);
-        public bool VerificarHorarioSala(TimeSpan horario, int idsala, DateTime fecha);
-        List<FuncionViwDTO> GetFuncionesDePelicula(int id);
-        Task<object> GetFuncionesCondicional(string fecha, string titulo);
-        public bool ValidarPkPelicula(int peliculaId);
-        public String GetNombrePelicula(int id);
+        public ResponseDTO<object> GetTicketsRestantes(int funcionId);
+        public ResponseDTO<object> Delete(int id);
+        public ResponseDTO<FuncionesDTO> AddFunctionAndReturn(FuncionesDTO entity);
+        
+         public ResponseDTO<object> GetFuncionesDePelicula(int id);
+         public ResponseDTO<object> GetFuncionesCondicional(string fecha, string titulo);
+        ResponseDTO<object> GetFuncionById(int id);
     }
 
 
     public class FuncionService: IFuncionService
     {
+        private readonly IFuncionValidation funcionValidation;
         private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
         private readonly IFuncionQuery _query;
         private readonly IFuncionValidation validation;
+        private readonly IPeliculaValidation PeliculaValidation;
+        private readonly ISalaValidation salaValidation;
 
-        public FuncionService(IGenericsRepository genericsRepository, ApplicationDbContext context, IFuncionQuery query, IFuncionValidation validation)
+        public FuncionService(IFuncionValidation funcionValidation, IGenericsRepository genericsRepository, ApplicationDbContext context, IFuncionQuery query, IFuncionValidation validation, IPeliculaValidation peliculaValidation, ISalaValidation salaValidation)
         {
+            this.funcionValidation = funcionValidation;
             this.genericsRepository = genericsRepository;
             this.context = context;
             _query = query;
             this.validation = validation;
+            PeliculaValidation = peliculaValidation;
+            this.salaValidation = salaValidation;
         }
 
-
-        public object AddFunctionAndReturn(FuncionesDTO entity)
+        public ResponseDTO<FuncionesDTO> AddFunctionAndReturn(FuncionesDTO entity)
         {
+            ResponseDTO<FuncionesDTO> responseDTO = new ResponseDTO<FuncionesDTO>();
+
             try
             {
+                
 
-                if (ValidarPkPelicula(entity.PeliculaId))
+                if (PeliculaValidation.ValidarPkPelicula(entity.PeliculaId))
                 {
                     DateTime fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null);
-                    if (!VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay, entity.SalaId, fecha))
+                    if (!salaValidation.VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay, entity.SalaId, fecha))
                     {
                         var NewFuncion = new Funciones()
                         {
@@ -63,34 +70,48 @@ namespace PS.APLICATION.Services
                         };
 
                         genericsRepository.Add<Funciones>(NewFuncion);
-                        return entity;
-
+                        
+                        
+                        responseDTO.Data.Add(entity);
+                        return responseDTO;
                     }
-                    return "Ese espacio horario ya esta asignado"; 
+                    
+                    responseDTO.Response.Add("Ese espacio horario ya esta asignado");
+                    return responseDTO;
                 }
-                return "No existe esa pelicula";
+                responseDTO.Response.Add("Id inexistente");
+                return responseDTO;
             }
             catch (Exception e)
-            {
 
-                return e.Message;
+            {
+                responseDTO.Response.Add(e.Message);
+                return responseDTO;
             }
 
         }
 
        
 
-        public object Delete(int id)
+        public ResponseDTO<object> Delete(int id)
         {
-            var Funcion = (from x in context.Funciones where x.FuncionId == id select x).FirstOrDefault<Funciones>();
+            ResponseDTO<object> responseDTO = new ResponseDTO<object>();
+            Funciones Funcion = _query.GetFuncion(id);
+           
             if (Funcion != null)
             {
                 genericsRepository.Delete<Funciones>(Funcion);
-                return "La funcion fue borrada";
+                FuncionDeleteDTO func = new FuncionDeleteDTO
+                {
+                    FuncionId = Funcion.FuncionId
+                };
+                responseDTO.Data.Add(func);
+                return responseDTO;
             }
             else 
             {
-                return "No existe esa funcion";
+                responseDTO.Response.Add("Id inexistente");
+                return responseDTO;
             }
             
 
@@ -100,122 +121,85 @@ namespace PS.APLICATION.Services
 
        
 
-        public List<FuncionViwDTO> GetFuncionesDePelicula(int id)
+        public ResponseDTO<object> GetFuncionesDePelicula(int id)
         {
-            
-            List<FuncionViwDTO> funcionViwDTOs = new List<FuncionViwDTO>();
-            var funciones= _query.GuetFuncionesByIdFilm(id);
-            foreach (Funciones fun in funciones)
+            ResponseDTO<object> response = new ResponseDTO<object>();
+
+            if (PeliculaValidation.ValidarPkPelicula(id))
             {
-                FuncionViwDTO Funcion = new FuncionViwDTO
-                {
-                    funcionId = fun.FuncionId,
-                    PeliculaNombre = (from x in context.Peliculas where x.PeliculaId == fun.PeliculaId select x.Titulo).FirstOrDefault<string>(),
-                    SalaId = fun.SalaId,
-                    Fecha = fun.Fecha.ToShortDateString(),
-                    Horario = fun.Horario.ToString()
-                };
-                funcionViwDTOs.Add(Funcion);
+                response.Data.Add(_query.GetFuncionesDePelicula(id));
+                return response;
             }
-            return funcionViwDTOs;
+            else
+            {
+                response.Response.Add("Id inexistente");
+                return response;
+            }
         }
 
        
 
-        public bool VerificarHorarioSala(TimeSpan horario, int idsala,DateTime fecha)
+       
+        public ResponseDTO<object> GetTicketsRestantes(int funcionId)
         {
-            TimeSpan horasDeFuncionStandar =DateTime.Parse("2:30:00").TimeOfDay;
-                
-                List<Funciones> funcion = (from x in context.Funciones where x.SalaId == idsala & x.Fecha==fecha select x).ToList();
-            if (funcion.Any())
-                {
-                    foreach (Funciones funciones in funcion)
-                    {
-
-                        if (funciones.Horario + horasDeFuncionStandar > horario)
-                            return true;
-                    }
-                }       
-            return false;
-        }
-        public int GetTicketsRestantes(int funcionId)
-        {
-            int IdSala = (from x in context.Funciones where x.FuncionId == funcionId select x.SalaId).FirstOrDefault<int>();
-            int capacidadDeSala = (from x in context.Salas where x.SalasId == IdSala select x.Capacidad).FirstOrDefault<int>();
-            int TiketParaFuncion = (from x in context.Tickets where x.FuncionId == funcionId select x).Count();
-            return capacidadDeSala - TiketParaFuncion;
-        }
-
-        public async Task<object> GetFuncionesCondicional(string fecha, string titulo)
-        {
-            string validation_response = null;
-            //if (string.IsNullOrEmpty(fecha))
-            //    fecha = DateTime.Now.ToString("dd/MM/yyyy");
-
-            if (!validation.ValidateParametersRequest(fecha, titulo))
+            ResponseDTO<object> response = new ResponseDTO<object>();
+            if (funcionValidation.ValidarFuncion(funcionId))
             {
-                validation_response = "Debe completar almenos un campo";
-                return validation_response;
+                response.Data.Add(_query.TicketsRestantes(funcionId));
+                return response;
             }
-
-            if (string.IsNullOrEmpty(fecha))
-            {
-                int idpelicula = await (from x in context.Peliculas where x.Titulo == titulo select x.PeliculaId).FirstOrDefaultAsync<int>();
-                var Query = await (from x in context.Funciones where x.PeliculaId == idpelicula select x).ToListAsync();
-                List<FuncionViwDTO> funcionViwDTO = new List<FuncionViwDTO>();
-                foreach (Funciones func in Query)
-                {
-                    funcionViwDTO.Add(new FuncionViwDTO
-                    {
-                        funcionId = func.FuncionId,
-                        PeliculaNombre = GetNombrePelicula(func.PeliculaId),
-                        SalaId = func.SalaId,
-                        Fecha = func.Fecha.ToString("dd/MM/yyyy"),
-                        Horario = func.Horario.ToString()
-                    });
-                }
-                return funcionViwDTO;
-            }
-            else if(!string.IsNullOrEmpty(fecha) && !string.IsNullOrEmpty(titulo))
-            {
-                int idpelicula = await (from x in context.Peliculas where x.Titulo == titulo select x.PeliculaId).FirstOrDefaultAsync<int>();
-                var Query = await (from x in context.Funciones where x.PeliculaId == idpelicula | x.Fecha >= Convert.ToDateTime(fecha) select x).ToListAsync();
-                List<FuncionViwDTO> funcionViwDTO = new List<FuncionViwDTO>();
-                foreach (Funciones func in Query)
-                {
-                    funcionViwDTO.Add(new FuncionViwDTO
-                    {
-                        funcionId = func.FuncionId,
-                        PeliculaNombre = GetNombrePelicula(func.PeliculaId),
-                        SalaId = func.SalaId,
-                        Fecha = func.Fecha.ToString("dd/MM/yyyy"),
-                        Horario = func.Horario.ToString()
-                    });
-                }
-                return funcionViwDTO;
-            }
-
-            var queryDTO = await (from x in context.Funciones
-                                  join Peliculas in context.Peliculas on x.PeliculaId equals Peliculas.PeliculaId
-                                  where x.Fecha == Convert.ToDateTime(fecha)
-                                  select new FuncionViwDTO { funcionId = x.FuncionId, PeliculaNombre = Peliculas.Titulo, SalaId = x.SalaId, Fecha = x.Fecha.ToString(), Horario = x.Horario.ToString() }
-                          ).ToListAsync<FuncionViwDTO>();
-
-            return queryDTO;
-        }
-
-        public bool ValidarPkPelicula(int peliculaId)
-        {
-            Peliculas pelicula = (from x in context.Peliculas where x.PeliculaId == peliculaId select x).FirstOrDefault<Peliculas>();
-            if (pelicula != null)
-                return true;
             else
-                return false;
+            {
+                response.Response.Add("Id inexistente");
+                return response;
+            }
+           
+            
+          
         }
 
-        public string GetNombrePelicula(int id)
+        public ResponseDTO<object> GetFuncionesCondicional(string fecha, string titulo)
         {
-            return (from x in context.Peliculas where x.PeliculaId == id select x.Titulo).FirstOrDefault<string>();
+            
+            ResponseDTO<object> response = new ResponseDTO<object>();
+
+            try
+            {
+                if (!validation.ValidateParametersRequest(fecha, titulo))
+                {
+                    response.Response.Add("Debe completar almenos un campo");
+                    return response;
+                }
+
+                if (string.IsNullOrEmpty(fecha))
+                {
+                    response.Data.Add(_query.ReturnPorNombre(titulo));
+                    return response;
+
+                }
+                else if (!string.IsNullOrEmpty(fecha) && !string.IsNullOrEmpty(titulo))
+                {
+                    response.Data.Add(_query.ReturnPorNombreYFecha(fecha, titulo));
+                    return response;
+                }
+
+                response.Data.Add(_query.ReturnPorFecha(fecha));
+                return response;
+            }
+            catch (Exception e)
+            {
+
+                response.Response.Add(e.Message);
+                return response;
+            }
+       
+        }
+
+        public ResponseDTO<object> GetFuncionById(int id)
+        {
+            ResponseDTO<object> response = new ResponseDTO<object>();
+            response.Data.Add(_query.GetFuncionVideo(id));
+            return response;
         }
     }
 }

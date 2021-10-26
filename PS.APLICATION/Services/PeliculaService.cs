@@ -1,4 +1,6 @@
-﻿using PS.DATE;
+﻿using Newtonsoft.Json;
+using PS.APLICATION.Validations;
+using PS.DATE;
 using PS.DATE.Command;
 using PS.DOMAIN.Comands;
 using PS.DOMAIN.DTOs;
@@ -14,11 +16,10 @@ namespace PS.APLICATION.Services
 {
     public interface IpeliculaService
     {
-        public List<PeliculaDTO> MostrarPeliculas();
-        public List<Peliculas> MasInformacionDeFilm(int idfilm);
-      
-        public Object GetFilm(int id);
-        object UpdatePelicula(PeliculaDTO pelicula, int id);
+        public object MostrarPeliculas();
+        public ResponseDTO<object> GetFilm(int id);
+        public object UpdatePelicula(PeliculaDTO pelicula, int id);
+        public object GetAllFilm();
     }
 
 
@@ -28,34 +29,38 @@ namespace PS.APLICATION.Services
         private readonly IGenericsRepository genericsRepository;
         private readonly ApplicationDbContext context;
         private readonly IPeliculaQuery _query;
+        private readonly IPeliculaValidation peliculaValidator;
 
-        public PeliculaService(IGenericsRepository genericsRepository, ApplicationDbContext context, IPeliculaQuery query)
+        public PeliculaService(IGenericsRepository genericsRepository, ApplicationDbContext context, IPeliculaQuery query, IPeliculaValidation peliculaValidator)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;
             _query = query;
+            this.peliculaValidator = peliculaValidator;
         }
 
-        public object GetFilm(int id)
+        public object GetAllFilm()
         {
-            Peliculas Pelicula = (from x in context.Peliculas where x.PeliculaId == id select x).FirstOrDefault<Peliculas>();
-            PeliculaDTO peliculaDTO = new PeliculaDTO
+            return _query.GetPeliculasCompleta();
+        }
+
+        public ResponseDTO<object> GetFilm(int id)
+        {
+            ResponseDTO<object> response = new ResponseDTO<object>();
+            if (peliculaValidator.ValidarPkPelicula(id))
             {
-                titulo = Pelicula.Titulo,
-                poster = Pelicula.Poster,
-                trailer = Pelicula.Trailer,
-                sinospsis = Pelicula.Sinospsis
-            };
-            return peliculaDTO;
+
+                response.Data.Add(_query.GetPeliculaDTO(id));
+                return response;
+                  
+            }
+            response.Response.Add("No existe esa pelicula en nuestras bases de datos");
+            return response;
         }
 
-        public List<Peliculas> MasInformacionDeFilm(int idfilm)
-        {
-            return (from x in context.Peliculas where x.PeliculaId == idfilm select x).ToList();
-             
-        }
+       
 
-        public List<PeliculaDTO> MostrarPeliculas()
+        public object MostrarPeliculas()
         {
             return _query.GetPeliculas();
 
@@ -67,17 +72,29 @@ namespace PS.APLICATION.Services
 
         public object UpdatePelicula(PeliculaDTO pelicula, int id)
         {
-            Peliculas NuevaPelicula = new Peliculas()
+            ResponseDTO<PeliculaDTO> response = new ResponseDTO<PeliculaDTO>();
+            if (peliculaValidator.ValidarPkPelicula(id))
             {
-                PeliculaId = id,
-                Titulo = pelicula.titulo,
-                Sinospsis = pelicula.sinospsis,
-                Trailer = pelicula.trailer,
-                Poster = pelicula.poster
+                Peliculas NuevaPelicula = new Peliculas()
+                {
+                    PeliculaId = id,
+                    Titulo = pelicula.titulo,
+                    Sinopsis = pelicula.sinopsis,
+                    Trailer = pelicula.trailer,
+                    Poster = pelicula.poster
 
-            };
-            genericsRepository.Update<Peliculas>(NuevaPelicula);
-            return NuevaPelicula;
+                };
+                genericsRepository.Update<Peliculas>(NuevaPelicula);
+               response.Data.Add(pelicula);
+
+                return response.Data;
+            }
+            else {
+                response.Response.Add("No existe el identificador de esa pelicula");
+                return response.Response;
+            }
+
+            
         }
     }
 }

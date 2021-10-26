@@ -24,15 +24,33 @@ namespace PS.API.CINE.Controllers
         }
 
         [HttpGet]
+        [Route("{id}")]
         public IActionResult GetFilm(int id)
+        {
+
+            var response = new ResponseDTO<Object>();
+            response = _service.GetFilm(id);
+            if (!response.Response.Any())
+            {
+                return new JsonResult(response.Data) { StatusCode = 200 };
+            }
+            else
+            {
+                return new JsonResult(response.Response) { StatusCode = 400 };
+            }
+           
+        }
+        [HttpGet]
+        [Route("/All")]
+        public IActionResult GetAllFilm()
         {
             try
             {
-                return new JsonResult(_service.GetFilm(id)) { StatusCode = 200 };
+                return new JsonResult(_service.GetAllFilm()) { StatusCode = 200 };
             }
             catch (Exception e)
             {
-                return BadRequest(new {e.Message });
+                return new JsonResult(BadRequest(e.Message)) { StatusCode = 400 };
             }
         }
         [HttpPut]
@@ -45,7 +63,7 @@ namespace PS.API.CINE.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(new { e.Message });
+                return new JsonResult(BadRequest(e.Message)) { StatusCode = 400 };
             }
         }
     }

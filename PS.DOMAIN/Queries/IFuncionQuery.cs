@@ -10,7 +10,14 @@ namespace PS.DOMAIN.Queries
 {
     public interface IFuncionQuery
     {
-        List<Funciones> GuetFuncionesByIdFilm(int id);
-        object GetPeliculasCondicional(string fecha, string titulo);
+        ResponseDTO<Funciones> GuetFuncionesByIdFilm(int id);
+        object ReturnPorNombre(string titulo);
+        object ReturnPorNombreYFecha(string fecha, string titulo);
+      
+        object ReturnPorFecha(string fecha);
+        TicketsRestantesDTO TicketsRestantes(int funcionId);
+        object GetFuncionesDePelicula(int id);
+        Funciones GetFuncion(int id);
+        FuncionByIdDTO GetFuncionVideo(int id);
     }
 }

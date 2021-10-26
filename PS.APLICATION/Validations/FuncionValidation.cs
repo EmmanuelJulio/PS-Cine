@@ -11,10 +11,11 @@ namespace PS.APLICATION.Validations
 {
     public interface IFuncionValidation
     {
-        //public bool CrearFuncion(int idpelicula, TimeSpan horaFuncion, int salaid);
+       
         public int VerificarCapacidadDelaFuncion(int salaid, int funcionid);
-
+        public bool ValidarFuncion(int idFuncion);
         public bool ValidateParametersRequest(string fecha, string titulo);
+       
     }
 
 
@@ -29,6 +30,17 @@ namespace PS.APLICATION.Validations
             this.context = context;
         }
 
+        public bool ValidarFuncion(int idFuncion)
+        {
+            
+                Funciones funcion = (from x in context.Funciones where x.FuncionId == idFuncion select x).FirstOrDefault<Funciones>();
+                if (funcion != null)
+                    return true;
+                else
+                    return false;
+            
+        }
+
         public bool ValidateParametersRequest(string fecha, string titulo)
         {
             if (string.IsNullOrEmpty(fecha) && string.IsNullOrEmpty(titulo))
@@ -37,24 +49,13 @@ namespace PS.APLICATION.Validations
             return true;                      
         }
 
-        //public bool CrearFuncion(int idpelicula, TimeSpan horaFuncion, int salaid)
-        //{
-
-        //    if (!service.VerificarHorarioSala(horaFuncion, salaid))
-        //    {
-        //        service.AddFunction(new Funciones { Fecha = DateTime.Now, PeliculaId = idpelicula, SalaId = salaid, Horario = horaFuncion });                               
-        //        Console.WriteLine("se agrego la funcion");
-        //        return true;
-        //    }
-        //    else
-        //        Console.WriteLine("ya existe una funcion a esa hora en esa sala");
-        //    return false;
-
-        //}
+       
 
         public int VerificarCapacidadDelaFuncion(int salaid, int funcionid)
         {
             return (from x in context.Tickets where x.FuncionId == funcionid select x).Count();                        
         }
+
+      
     }
 }

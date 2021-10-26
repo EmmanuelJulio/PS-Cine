@@ -8,27 +8,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SqlKata.Execution;
+using PS.DOMAIN.Entities;
 
 namespace PS.DATE.Queries
 {
     
    public class PeliculaQuery : IPeliculaQuery
     {
-        private readonly IDbConnection connection;
-        private readonly Compiler sqlKataCompiler;
 
-        public PeliculaQuery(IDbConnection connection, Compiler sqlKataCompiler)
+        private readonly ApplicationDbContext context;
+
+
+public PeliculaQuery(ApplicationDbContext context)
         {
-            this.connection = connection;
-            this.sqlKataCompiler = sqlKataCompiler;
+            this.context = context;
         }
 
-        public List<PeliculaDTO> GetPeliculas()
+        public object GetPeliculaDTO(int id)
         {
-            var db = new SqlKata.Execution.QueryFactory(connection, sqlKataCompiler);
-            var query = db.Query("Peliculas").Select();
-            return query.Get<PeliculaDTO>().ToList();
+            return (from x in context.Peliculas where x.PeliculaId == id
+                    select new PeliculaDTO
+                    {
+                        titulo = x.Titulo,
+                        poster = x.Poster,
+                        trailer = x.Trailer,
+                        sinopsis = x.Sinopsis
+                    }).FirstOrDefault<PeliculaDTO>();
+        }
+
+        public object GetPeliculas()
+        {
+            
+            return  (from x in context.Peliculas 
+                             select new PeliculaDTO{titulo = x.Titulo,poster=x.Poster,
+                                 trailer=x.Trailer,sinopsis=x.Sinopsis }).ToList<PeliculaDTO>();
+            
             
         }
+
+        public object GetPeliculasCompleta()
+        {
+            
+            return (from x in context.Peliculas 
+                             select new PeliculaDtoSinFunc { 
+                                 PeliculaId = x.PeliculaId, Titulo = x.Titulo,
+                                 Poster = x.Poster, Sinopsis = x.Sinopsis, 
+                                 Trailer = x.Trailer }).ToList<PeliculaDtoSinFunc>();
+            
+            
+
+        }
+
+
     }
 }
