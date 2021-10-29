@@ -8,5 +8,8 @@ namespace PS.DOMAIN.Queries
 {
     public interface ISalasQuery
     {
+        int PuestosRestantesEnFuncion(int idsala, int funcionId);
+        bool VerificarHorarioSala(TimeSpan horario, int idsala, DateTime fecha);
+        bool VerificarHorarioSala(int idSala);
     }
 }

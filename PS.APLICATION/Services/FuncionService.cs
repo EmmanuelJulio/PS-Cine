@@ -51,47 +51,62 @@ namespace PS.APLICATION.Services
         public ResponseDTO<FuncionesDTO> AddFunctionAndReturn(FuncionesDTO entity)
         {
             ResponseDTO<FuncionesDTO> responseDTO = new ResponseDTO<FuncionesDTO>();
-
             try
             {
-                
-
-                if (PeliculaValidation.ValidarPkPelicula(entity.PeliculaId))
+                if (salaValidation.VerificarExisteSala(entity.SalaId))
                 {
-                    DateTime fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null);
-                    if (!salaValidation.VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay, entity.SalaId, fecha))
+                    if (PeliculaValidation.ValidarPkPelicula(entity.PeliculaId))
                     {
-                        var NewFuncion = new Funciones()
+                        DateTime fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null);
+                        if (!salaValidation.VerificarHorarioSala(Convert.ToDateTime(entity.Horario).TimeOfDay, entity.SalaId, fecha))
                         {
-                            PeliculaId = entity.PeliculaId,
-                            Fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null),
-                            Horario = Convert.ToDateTime(entity.Horario).TimeOfDay,
-                            SalaId = entity.SalaId
-                        };
+                            var NewFuncion = new Funciones()
+                            {
+                                PeliculaId = entity.PeliculaId,
+                                Fecha = DateTime.ParseExact(entity.Fecha, "dd/MM/yyyy", null),
+                                Horario = Convert.ToDateTime(entity.Horario).TimeOfDay,
+                                SalaId = entity.SalaId
+                            };
 
-                        genericsRepository.Add<Funciones>(NewFuncion);
-                        
-                        
-                        responseDTO.Data.Add(entity);
+                            genericsRepository.Add<Funciones>(NewFuncion);
+
+
+                            responseDTO.Data.Add(entity);
+                            return responseDTO;
+                        }
+                        else
+                        {
+                            responseDTO.Response.Add("Ese espacio horario ya esta asignado");
+                            return responseDTO;
+                        }
+
+                    }
+                    else
+                    {
+                        responseDTO.Response.Add("Id de pelicula ineccistente inexistente");
                         return responseDTO;
                     }
-                    
-                    responseDTO.Response.Add("Ese espacio horario ya esta asignado");
+
+                }
+                else
+                {
+                    responseDTO.Response.Add("No existe esa sala");
                     return responseDTO;
                 }
-                responseDTO.Response.Add("Id inexistente");
-                return responseDTO;
             }
             catch (Exception e)
-
             {
+
                 responseDTO.Response.Add(e.Message);
                 return responseDTO;
             }
 
         }
 
-       
+
+
+
+
 
         public ResponseDTO<object> Delete(int id)
         {
