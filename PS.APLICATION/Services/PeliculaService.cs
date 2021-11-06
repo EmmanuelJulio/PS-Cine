@@ -20,6 +20,7 @@ namespace PS.APLICATION.Services
         public ResponseDTO<object> GetFilm(int id);
         public object UpdatePelicula(PeliculaDTO pelicula, int id);
         public object GetAllFilm();
+        ResponseDTO<FuncionViwDTO> GetFilmByFuntion(int id);
     }
 
 
@@ -30,13 +31,15 @@ namespace PS.APLICATION.Services
         private readonly ApplicationDbContext context;
         private readonly IPeliculaQuery _query;
         private readonly IPeliculaValidation peliculaValidator;
+        private readonly IFuncionValidation funcionValidation;
 
-        public PeliculaService(IGenericsRepository genericsRepository, ApplicationDbContext context, IPeliculaQuery query, IPeliculaValidation peliculaValidator)
+        public PeliculaService(IGenericsRepository genericsRepository, ApplicationDbContext context, IPeliculaQuery query, IPeliculaValidation peliculaValidator, IFuncionValidation funcionValidation)
         {
             this.genericsRepository = genericsRepository;
             this.context = context;
             _query = query;
             this.peliculaValidator = peliculaValidator;
+            this.funcionValidation = funcionValidation;
         }
 
         public object GetAllFilm()
@@ -58,7 +61,20 @@ namespace PS.APLICATION.Services
             return response;
         }
 
-       
+        public ResponseDTO<FuncionViwDTO> GetFilmByFuntion(int id)
+        {
+            ResponseDTO<FuncionViwDTO> response = new ResponseDTO<FuncionViwDTO>();
+            if (funcionValidation.ValidarFuncion(id))
+            {
+               response.Data.Add( _query.getFilmByIdFuntion(id));
+                return response;
+            }
+            else
+            {
+                response.Response.Add("No existe esa funcion");
+                return response;
+            }
+        }
 
         public object MostrarPeliculas()
         {

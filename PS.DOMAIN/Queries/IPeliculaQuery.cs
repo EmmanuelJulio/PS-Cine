@@ -15,5 +15,6 @@ namespace PS.DOMAIN.Queries
         object GetPeliculas();
         object GetPeliculasCompleta();
         object GetPeliculaDTO(int id);
+        FuncionViwDTO getFilmByIdFuntion(int id);
     }
 }

@@ -24,6 +24,17 @@ public PeliculaQuery(ApplicationDbContext context)
             this.context = context;
         }
 
+        public FuncionViwDTO getFilmByIdFuntion(int id)
+        {
+            return (from x in context.Funciones
+                    join peliculas in context.Peliculas on x.PeliculaId equals peliculas.PeliculaId
+                    where x.FuncionId == id
+                    select new FuncionViwDTO { funcionId = x.FuncionId,
+                        PeliculaNombre = peliculas.Titulo,poster=peliculas.Poster,
+                        sinopsis=peliculas.Sinopsis, SalaId = x.SalaId, Fecha = x.Fecha.ToShortDateString(),
+                        Horario = x.Horario.ToString(@"hh\:mm") }).FirstOrDefault<FuncionViwDTO>();
+        }
+
         public object GetPeliculaDTO(int id)
         {
             return (from x in context.Peliculas where x.PeliculaId == id

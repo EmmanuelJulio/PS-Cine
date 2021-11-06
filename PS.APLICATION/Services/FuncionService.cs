@@ -180,11 +180,6 @@ namespace PS.APLICATION.Services
 
             try
             {
-                if (!validation.ValidateParametersRequest(fecha, titulo))
-                {
-                    response.Response.Add("Debe completar almenos un campo");
-                    return response;
-                }
 
                 if (string.IsNullOrEmpty(fecha))
                 {

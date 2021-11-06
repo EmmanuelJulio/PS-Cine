@@ -41,7 +41,7 @@ namespace PS.API.CINE.Controllers
            
         }
         [HttpGet]
-        [Route("/All")]
+        [Route("/api/pelicula/all")]
         public IActionResult GetAllFilm()
         {
             try
@@ -51,6 +51,21 @@ namespace PS.API.CINE.Controllers
             catch (Exception e)
             {
                 return new JsonResult(BadRequest(e.Message)) { StatusCode = 400 };
+            }
+        }
+        [HttpGet]
+        [Route("/api/pelicula/funcion/{id}")]
+        public IActionResult GetFilmByFuntion(int id)
+        {
+
+            var response = new ResponseDTO<FuncionViwDTO>();
+            response = _service.GetFilmByFuntion(id);
+            if (response.Response.Any()) {
+                return new JsonResult(response.Response) { StatusCode = 400 };
+            }
+            else
+            {
+                return new JsonResult(response.Data) { StatusCode = 200 };
             }
         }
         [HttpPut]
